@@ -100,7 +100,8 @@ enum perf_names_idx {
 	IDX_DISPLAYL,
 	IDX_DISPLAYR,
 	IDX_GREENLED,
-	IDX_REDLED
+	IDX_REDLED,
+	DISPLAYLCD,
 };
 static int wr_name_idx = IDX_DISPLAYR;
 static int rd_name_idx = IDX_SWITCH;
@@ -232,29 +233,33 @@ static ssize_t my_write(struct file* filp, const char __user* buf, size_t count,
 static long int my_ioctl(struct file*, unsigned int cmd, unsigned long arg)
 {
 	switch(cmd){
-	case RD_SWITCHES:
-		read_pointer = bar0_mmio + 0xC080; //TODO: update offset
-		rd_name_idx = IDX_SWITCH;
-		break;
 	case RD_PBUTTONS:
-		read_pointer = bar0_mmio + 0xC0A0; //TODO: update offset
+		read_pointer = bar0_mmio + 0xC000; //TODO: update offset
 		rd_name_idx = IDX_PBUTTONS;
 		break;
+	case RD_SWITCHES:
+		read_pointer = bar0_mmio + 0xC020; //TODO: update offset
+		rd_name_idx = IDX_SWITCH;
+		break;
+	case WR_GREEN_LEDS:
+		write_pointer = bar0_mmio + 0xC040; //TODO: update offset
+		wr_name_idx = IDX_GREENLED;
+		break;
+	case WR_RED_LEDS:
+		write_pointer = bar0_mmio + 0xC060; //TODO: update offset
+		wr_name_idx = IDX_REDLED;
+		break;
 	case WR_L_DISPLAY:
-		write_pointer = bar0_mmio + 0xC020; //TODO: update offset
+		write_pointer = bar0_mmio + 0xC080; //TODO: update offset
 		wr_name_idx = IDX_DISPLAYL;
 		break;
 	case WR_R_DISPLAY:
-		write_pointer = bar0_mmio + 0xC000; //TODO: update offset
+		write_pointer = bar0_mmio + 0xC0c0; //TODO: update offset
 		wr_name_idx = IDX_DISPLAYR;
 		break;
-	case WR_RED_LEDS:
-		write_pointer = bar0_mmio + 0xC040; //TODO: update offset
-		wr_name_idx = IDX_DISPLAYR;
-		break;
-	case WR_GREEN_LEDS:
-		write_pointer = bar0_mmio + 0xC060; //TODO: update offset
-		wr_name_idx = IDX_DISPLAYR;
+	case LCD_DISPLAY:
+		write_pointer = bar0_mmio + 0xC0e0; //TODO: update offset
+		wr_name_idx = DISPLAYLCD;
 		break;
 	default:
 		printk("my_driver: unknown ioctl command: 0x%X\n", cmd);
