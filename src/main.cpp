@@ -14,5 +14,7 @@
 int main(int argc, char** argv)
 {
 	printf("hello world\n");
+	int x;
+	std cin >> x;
 	return 0;
 }

@@ -23,3 +23,4 @@ echo ""
 echo -e "$GREEN IN ORDER TO RUN THE APPLICATION RUN: $CLEAR"
 echo -e "$GREEN\t ./app/build/release/app $CLEAR"
 
+read -rn1
