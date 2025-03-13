@@ -243,5 +243,7 @@ int main() {
     }
 
     close(fd);
+
+	std::cin >> std::hex >> ledValue;
     return 0;
 }
