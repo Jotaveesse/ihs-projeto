@@ -64,7 +64,7 @@ char LCDEntryMode = 0;
 
 // Function Prototypes
 void LCD_Init(int fd);
-void LCD_Cmd(int fd, uint8_t command) {
+void LCD_Cmd(int fd, uint8_t command) {;
 void LCD_Data(int fd, uint8_t data);
 void LCD_String(int fd, char *str);
 
