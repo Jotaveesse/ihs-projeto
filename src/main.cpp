@@ -63,10 +63,10 @@ char LCDDisplayControl = 0;
 char LCDEntryMode = 0;
 
 // Function Prototypes
-void LCD_Init(void);
-void LCD_Cmd(char command);
-void LCD_Data(char data);
-void LCD_String(char *str);
+void LCD_Init(int fd);
+void LCD_Cmd(int fd, uint8_t command) {
+void LCD_Data(int fd, uint8_t data);
+void LCD_String(int fd, char *str);
 
 //---------------------------------------------------------------
 // Initialize the LCD
