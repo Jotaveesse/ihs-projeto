@@ -193,7 +193,7 @@ int writeRightDisplay(int fd, unsigned int value) {
 
 int writeLCD(int fd, uint8_t data, uint8_t rs) {
     // Combine data and RS into a single value
-    unsigned int value_to_send = (rs << 9) | data; 
+    unsigned int value_to_send = (rs << 10) | data; 
 
 	std::cout << std::hex << value_to_send;
 
