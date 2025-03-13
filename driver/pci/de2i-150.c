@@ -91,7 +91,8 @@ static const char* peripheral[] = {
 	"display_l",
 	"display_r",
 	"green_leds",
-	"red_leds"
+	"red_leds",
+	"lcd"
 };
 
 enum perf_names_idx {
