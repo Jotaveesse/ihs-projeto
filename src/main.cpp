@@ -67,6 +67,7 @@ void LCD_Init(int fd);
 void LCD_Cmd(int fd, uint8_t command);
 void LCD_Data(int fd, uint8_t data);
 void LCD_String(int fd, char *str);
+int writeLCD(int fd, uint8_t data, uint8_t rs);
 
 //---------------------------------------------------------------
 // Initialize the LCD
@@ -317,13 +318,13 @@ int main() {
         return 1;
     }
 
-	LCD_Init(); // Initialize the LCD
+	LCD_Init(fd); // Initialize the LCD
 
-	LCD_String("Hello, World!"); // Display a string
+	LCD_String(fd, "Hello, World!"); // Display a string
 
 	// Move cursor to the beginning of the second line (if a 2-line display)
-	LCD_Cmd(LCD_DDRAM_ADDR | 0x40); 
-	LCD_String("Second Line");
+	LCD_Cmd(fd, LCD_DDRAM_ADDR | 0x40); 
+	LCD_String(fd, "Second Line");
 
     // Example Usage:
     unsigned int ledValue, buttons, switches, displayValue;
