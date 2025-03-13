@@ -75,7 +75,7 @@ void LCD_Cmd(int fd, uint8_t command);
 void LCD_Data(int fd, uint8_t data);
 void LCD_String(int fd, char *str);
 int writeLCD(int fd, uint8_t data, uint8_t rs, uint8_t rw, uint8_t en, uint8_t on);
-
+void LCD_On(int fd);
 //---------------------------------------------------------------
 // Initialize the LCD
 //---------------------------------------------------------------
@@ -119,7 +119,7 @@ void LCD_Init(int fd) {
 // Send a command to the LCD
 //---------------------------------------------------------------
 void LCD_On(int fd) {
-	writeLCD(fd, command, 0, 0, 1, 1);
+	writeLCD(fd, 0, 0, 0, 1, 1);
 }
 
 void LCD_Cmd(int fd, uint8_t command) {
