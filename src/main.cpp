@@ -159,10 +159,10 @@ int writeRightDisplayNumber(int fd, uint8_t num1, uint8_t num2, uint8_t num3, ui
     uint32_t displayValue = 0;
 
     // Construct the 32-bit value using patterns
-    displayValue |= (static_cast<uint32_t>(segPatterns[num1]) << 0);
-    displayValue |= (static_cast<uint32_t>(segPatterns[num2]) << 8);
-    displayValue |= (static_cast<uint32_t>(segPatterns[num3]) << 16);
-    displayValue |= (static_cast<uint32_t>(segPatterns[num4]) << 24);
+    displayValue |= (static_cast<uint32_t>(segPatterns[num4]) << 0);
+    displayValue |= (static_cast<uint32_t>(segPatterns[num3]) << 8);
+    displayValue |= (static_cast<uint32_t>(segPatterns[num2]) << 16);
+    displayValue |= (static_cast<uint32_t>(segPatterns[num1]) << 24);
 
     if (ioctl(fd, WR_R_DISPLAY) < 0) {
         std::cerr << "ioctl display write failed: " << strerror(errno) << std::endl;
@@ -179,10 +179,10 @@ int writeLeftDisplayNumber(int fd, uint8_t num1, uint8_t num2, uint8_t num3, uin
     uint32_t displayValue = 0;
 
     // Construct the 32-bit value using patterns
-    displayValue |= (static_cast<uint32_t>(segPatterns[num1]) << 0);
-    displayValue |= (static_cast<uint32_t>(segPatterns[num2]) << 8);
-    displayValue |= (static_cast<uint32_t>(segPatterns[num3]) << 16);
-    displayValue |= (static_cast<uint32_t>(segPatterns[num4]) << 24);
+    displayValue |= (static_cast<uint32_t>(segPatterns[num4]) << 0);
+    displayValue |= (static_cast<uint32_t>(segPatterns[num3]) << 8);
+    displayValue |= (static_cast<uint32_t>(segPatterns[num2]) << 16);
+    displayValue |= (static_cast<uint32_t>(segPatterns[num1]) << 24);
 
     if (ioctl(fd, WR_L_DISPLAY) < 0) {
         std::cerr << "ioctl display write failed: " << strerror(errno) << std::endl;
@@ -219,13 +219,9 @@ int main() {
     std::cin >> std::hex >> ledValue;
     if (writeRedLeds(fd, ledValue) != 0) { close(fd); return 1; }
 
-    unsigned int leftSeg1, leftSeg2, leftSeg3, leftSeg4;
-    std::cout << "Enter Left Display segment values (seg1 seg2 seg3 seg4, hex): ";
-    std::cin >> std::hex >> leftSeg1 >> leftSeg2 >> leftSeg3 >> leftSeg4;
-
 	unsigned int leftNum1, leftNum2, leftNum3, leftNum4;
     std::cout << "Enter Left Display number values (num1 num2 num3 num4, 0-9): ";
-    std::cin >> std::int8_t >> leftNum1 >> leftNum2 >> leftNum3 >> leftNum4;
+    std::cin >> leftNum1 >> leftNum2 >> leftNum3 >> leftNum4;
 
     if (writeLeftDisplayNumber(fd, leftNum1, leftNum2, leftNum3, leftNum4) != 0) {
         close(fd);
@@ -235,7 +231,7 @@ int main() {
     // Example: Control Right Display
     unsigned int rightNum1, rightNum2, rightNum3, rightNum4;
     std::cout << "Enter Right Display number values (num1 num2 num3 num4, 0-9): ";
-    std::cin >> std::int8_t >> rightNum1 >> rightNum2 >> rightNum3 >> rightNum4;
+    std::cin >> rightNum1 >> rightNum2 >> rightNum3 >> rightNum4;
 
     if (writeRightDisplayNumber(fd, rightNum1, rightNum2, rightNum3, rightNum4) != 0) {
         close(fd);
