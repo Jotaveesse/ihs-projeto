@@ -101,6 +101,45 @@ int readSwitches(int fd, unsigned int& value) {
     return 0;
 }
 
+int writeRightDisplay(int fd, uint8_t seg1, uint8_t seg2, uint8_t seg3, uint8_t seg4) {
+    uint32_t displayValue = 0;
+
+    // Construct the 32-bit value
+    displayValue |= (static_cast<uint32_t>(seg1) << 0);
+    displayValue |= (static_cast<uint32_t>(seg2) << 8);
+    displayValue |= (static_cast<uint32_t>(seg3) << 16);
+    displayValue |= (static_cast<uint32_t>(seg4) << 24);
+
+    if (ioctl(fd, WR_R_DISPLAY) < 0) {
+        std::cerr << "ioctl display write failed: " << strerror(errno) << std::endl;
+        return -1;
+    }
+    if (write(fd, &displayValue, sizeof(displayValue)) != sizeof(displayValue)) {
+        std::cerr << "write display failed: " << strerror(errno) << std::endl;
+        return -1;
+    }
+    return 0;
+}
+
+int writeLeftDisplay(int fd, uint8_t seg1, uint8_t seg2, uint8_t seg3, uint8_t seg4) {
+    uint32_t displayValue = 0;
+
+    // Construct the 32-bit value
+    displayValue |= (static_cast<uint32_t>(seg1) << 0);
+    displayValue |= (static_cast<uint32_t>(seg2) << 8);
+    displayValue |= (static_cast<uint32_t>(seg3) << 16);
+    displayValue |= (static_cast<uint32_t>(seg4) << 24);
+
+    if (ioctl(fd, WR_L_DISPLAY) < 0) {
+        std::cerr << "ioctl display write failed: " << strerror(errno) << std::endl;
+        return -1;
+    }
+    if (write(fd, &displayValue, sizeof(displayValue)) != sizeof(displayValue)) {
+        std::cerr << "write display failed: " << strerror(errno) << std::endl;
+        return -1;
+    }
+    return 0;
+}
 int main() {
     int fd = open("/dev/mydev", O_RDWR);
     if (fd < 0) {
@@ -108,31 +147,60 @@ int main() {
         return 1;
     }
 
-    // Example Usage:
-    unsigned int ledValue, buttons, switches, displayValue;
+    // Example: Control Green LEDs (binary input)
+    std::string ledBinary;
+    std::cout << "Enter Green LED value (binary): ";
+    std::cin >> ledBinary;
+    unsigned int ledValue = std::bitset(ledBinary).to_ulong();
+    if (writeGreenLeds(fd, ledValue) != 0) {
+        close(fd);
+        return 1;
+    }
 
-    if (readPushButtons(fd, buttons) != 0) { close(fd); return 1; }
-    std::cout << "Push Buttons: 0x" << std::hex << buttons << std::endl;
+    // Example: Control Red LEDs (binary input)
+    std::cout << "Enter Red LED value (binary): ";
+    std::cin >> ledBinary;
+    ledValue = std::bitset(ledBinary).to_ulong();
+    if (writeRedLeds(fd, ledValue) != 0) {
+        close(fd);
+        return 1;
+    }
 
-    if (readSwitches(fd, switches) != 0) { close(fd); return 1; }
-    std::cout << "Switches: 0x" << std::hex << switches << std::endl;
-	
-    std::cout << "Enter Green LED value (hex): ";
-    std::cin >> std::hex >> ledValue;
-    if (writeGreenLeds(fd, ledValue) != 0) { close(fd); return 1; }
+    // Example: Control Left Display (integer input)
+    int leftSeg1, leftSeg2, leftSeg3, leftSeg4;
+    std::cout << "Enter Left Display segment values (seg1 seg2 seg3 seg4, decimal): ";
+    std::cin >> leftSeg1 >> leftSeg2 >> leftSeg3 >> leftSeg4;
 
-    std::cout << "Enter Red LED value (hex): ";
-    std::cin >> std::hex >> ledValue;
-    if (writeRedLeds(fd, ledValue) != 0) { close(fd); return 1; }
+    if (writeDisplay(fd, WR_L_DISPLAY, static_cast<uint8_t>(leftSeg1), static_cast<uint8_t>(leftSeg2), static_cast<uint8_t>(leftSeg3), static_cast<uint8_t>(leftSeg4)) != 0) {
+        close(fd);
+        return 1;
+    }
 
-    std::cout << "Enter Left Display value (hex): ";
-    std::cin >> std::hex >> displayValue;
-    if (writeLeftDisplay(fd, displayValue) != 0) { close(fd); return 1; }
+    // Example: Control Right Display (integer input)
+    int rightSeg1, rightSeg2, rightSeg3, rightSeg4;
+    std::cout << "Enter Right Display segment values (seg1 seg2 seg3 seg4, decimal): ";
+    std::cin >> rightSeg1 >> rightSeg2 >> rightSeg3 >> rightSeg4;
 
-    std::cout << "Enter Right Display value (hex): ";
-    std::cin >> std::hex >> displayValue;
-    if (writeRightDisplay(fd, displayValue) != 0) { close(fd); return 1; }
+    if (writeDisplay(fd, WR_R_DISPLAY, static_cast<uint8_t>(rightSeg1), static_cast<uint8_t>(rightSeg2), static_cast<uint8_t>(rightSeg3), static_cast<uint8_t>(rightSeg4)) != 0) {
+        close(fd);
+        return 1;
+    }
 
+    // Example: Read Push Buttons (binary output)
+    unsigned int buttons;
+    if (readPushButtons(fd, buttons) != 0) {
+        close(fd);
+        return 1;
+    }
+    std::cout << "Push Buttons (binary): " << std::bitset(buttons) << std::endl;
+
+    // Example: Read Switches (binary output)
+    unsigned int switches;
+    if (readSwitches(fd, switches) != 0) {
+        close(fd);
+        return 1;
+    }
+    std::cout << "Switches (binary): " << std::bitset(switches) << std::endl;
 
     close(fd);
     return 0;
