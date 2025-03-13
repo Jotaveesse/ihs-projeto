@@ -140,6 +140,7 @@ int writeLeftDisplay(int fd, uint8_t seg1, uint8_t seg2, uint8_t seg3, uint8_t s
     }
     return 0;
 }
+
 int main() {
     int fd = open("/dev/mydev", O_RDWR);
     if (fd < 0) {
@@ -147,60 +148,40 @@ int main() {
         return 1;
     }
 
-    // Example: Control Green LEDs (binary input)
-    std::string ledBinary;
-    std::cout << "Enter Green LED value (binary): ";
-    std::cin >> ledBinary;
-    unsigned int ledValue = std::bitset(ledBinary).to_ulong();
-    if (writeGreenLeds(fd, ledValue) != 0) {
+    // Example Usage:
+    unsigned int ledValue, buttons, switches, displayValue;
+
+    if (readPushButtons(fd, buttons) != 0) { close(fd); return 1; }
+    std::cout << "Push Buttons: 0x" << std::hex << buttons << std::endl;
+
+    if (readSwitches(fd, switches) != 0) { close(fd); return 1; }
+    std::cout << "Switches: 0x" << std::hex << switches << std::endl;
+
+    std::cout << "Enter Green LED value (hex): ";
+    std::cin >> std::hex >> ledValue;
+    if (writeGreenLeds(fd, ledValue) != 0) { close(fd); return 1; }
+
+    std::cout << "Enter Red LED value (hex): ";
+    std::cin >> std::hex >> ledValue;
+    if (writeRedLeds(fd, ledValue) != 0) { close(fd); return 1; }
+
+    uint8_t leftSeg1, leftSeg2, leftSeg3, leftSeg4;
+    std::cout << "Enter Left Display segment values (seg1 seg2 seg3 seg4, hex): ";
+    std::cin >> std::hex >> leftSeg1 >> leftSeg2 >> leftSeg3 >> leftSeg4;
+
+    if (writeLeftDisplay(fd, leftSeg1, leftSeg2, leftSeg3, leftSeg4) != 0) {
         close(fd);
         return 1;
     }
 
-    // Example: Control Red LEDs (binary input)
-    std::cout << "Enter Red LED value (binary): ";
-    std::cin >> ledBinary;
-    ledValue = std::bitset(ledBinary).to_ulong();
-    if (writeRedLeds(fd, ledValue) != 0) {
+    uint8_t rightSeg1, rightSeg2, rightSeg3, rightSeg4;
+    std::cout << "Enter Right Display segment values (seg1 seg2 seg3 seg4, hex): ";
+    std::cin >> std::hex >> rightSeg1 >> rightSeg2 >> rightSeg3 >> rightSeg4;
+
+    if (writeRightDisplay(fd, rightSeg1, rightSeg2, rightSeg3, rightSeg4) != 0) {
         close(fd);
         return 1;
     }
-
-    // Example: Control Left Display (integer input)
-    int leftSeg1, leftSeg2, leftSeg3, leftSeg4;
-    std::cout << "Enter Left Display segment values (seg1 seg2 seg3 seg4, decimal): ";
-    std::cin >> leftSeg1 >> leftSeg2 >> leftSeg3 >> leftSeg4;
-
-    if (writeDisplay(fd, WR_L_DISPLAY, static_cast<uint8_t>(leftSeg1), static_cast<uint8_t>(leftSeg2), static_cast<uint8_t>(leftSeg3), static_cast<uint8_t>(leftSeg4)) != 0) {
-        close(fd);
-        return 1;
-    }
-
-    // Example: Control Right Display (integer input)
-    int rightSeg1, rightSeg2, rightSeg3, rightSeg4;
-    std::cout << "Enter Right Display segment values (seg1 seg2 seg3 seg4, decimal): ";
-    std::cin >> rightSeg1 >> rightSeg2 >> rightSeg3 >> rightSeg4;
-
-    if (writeDisplay(fd, WR_R_DISPLAY, static_cast<uint8_t>(rightSeg1), static_cast<uint8_t>(rightSeg2), static_cast<uint8_t>(rightSeg3), static_cast<uint8_t>(rightSeg4)) != 0) {
-        close(fd);
-        return 1;
-    }
-
-    // Example: Read Push Buttons (binary output)
-    unsigned int buttons;
-    if (readPushButtons(fd, buttons) != 0) {
-        close(fd);
-        return 1;
-    }
-    std::cout << "Push Buttons (binary): " << std::bitset(buttons) << std::endl;
-
-    // Example: Read Switches (binary output)
-    unsigned int switches;
-    if (readSwitches(fd, switches) != 0) {
-        close(fd);
-        return 1;
-    }
-    std::cout << "Switches (binary): " << std::bitset(switches) << std::endl;
 
     close(fd);
     return 0;
