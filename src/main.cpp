@@ -103,14 +103,14 @@ void LCD_Init(int fd) {
 //---------------------------------------------------------------
 // Send a command to the LCD
 //---------------------------------------------------------------
-void LCD_Cmd(int fd, char command) {
+void LCD_Cmd(int fd, uint8_t command) {
     writeLCD(fd, command, 0);  // RS = 0 for command
 }
 
 //---------------------------------------------------------------
 // Send data to the LCD
 //---------------------------------------------------------------
-void LCD_Data(int fd, char data) {
+void LCD_Data(int fd, uint8_t data) {
     writeLCD(fd, data, 1);   // RS = 1 for data
 }
 
