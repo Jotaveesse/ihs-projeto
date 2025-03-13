@@ -197,6 +197,8 @@ int writeLCD(int fd, uint8_t data, uint8_t rs) {
 
 	std::cout << std::hex << value_to_send;
 
+	std::cout << "\n";
+
     if (ioctl(fd, LCD_DISPLAY) < 0) {
         std::cerr << "ioctl LCD_DISPLAY failed: " << strerror(errno) << std::endl;
         return -1;
