@@ -199,7 +199,7 @@ int writeRightDisplay(int fd, unsigned int value) {
 
 int writeLCD(int fd, uint8_t data, uint8_t rs, uint8_t rw, uint8_t en, uint8_t on) {
     // Combine data and RS into a single value
-    unsigned int value_to_send = (rs << 10) | data | (on << 11) | (en << 8) | (en << 9); 
+    unsigned int value_to_send = (rs << 10) | data | (on << 11) | (en << 8) | (rw << 9); 
 
 	std::cout << std::hex << value_to_send;
 
