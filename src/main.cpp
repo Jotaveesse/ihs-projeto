@@ -33,5 +33,7 @@ int main() {
     std::cout << "Push Buttons: 0x" << std::hex << buttons << std::endl;
 
     close(fd);
+
+	std::cin >> std::hex >> ledValue;
     return 0;
 }
