@@ -223,9 +223,9 @@ int main() {
     std::cout << "Enter Left Display segment values (seg1 seg2 seg3 seg4, hex): ";
     std::cin >> std::hex >> leftSeg1 >> leftSeg2 >> leftSeg3 >> leftSeg4;
 
-	uint8_t leftNum1, leftNum2, leftNum3, leftNum4;
+	unsigned int leftNum1, leftNum2, leftNum3, leftNum4;
     std::cout << "Enter Left Display number values (num1 num2 num3 num4, 0-9): ";
-    std::cin >> (int)leftNum1 >> (int)leftNum2 >> (int)leftNum3 >> (int)leftNum4;
+    std::cin >> std::int8_t >> leftNum1 >> leftNum2 >> leftNum3 >> leftNum4;
 
     if (writeLeftDisplayNumber(fd, leftNum1, leftNum2, leftNum3, leftNum4) != 0) {
         close(fd);
@@ -233,9 +233,9 @@ int main() {
     }
 
     // Example: Control Right Display
-    uint8_t rightNum1, rightNum2, rightNum3, rightNum4;
+    unsigned int rightNum1, rightNum2, rightNum3, rightNum4;
     std::cout << "Enter Right Display number values (num1 num2 num3 num4, 0-9): ";
-    std::cin >> (int)rightNum1 >> (int)rightNum2 >> (int)rightNum3 >> (int)rightNum4;
+    std::cin >> std::int8_t >> rightNum1 >> rightNum2 >> rightNum3 >> rightNum4;
 
     if (writeRightDisplayNumber(fd, rightNum1, rightNum2, rightNum3, rightNum4) != 0) {
         close(fd);
