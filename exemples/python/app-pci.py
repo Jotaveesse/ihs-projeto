@@ -10,6 +10,8 @@ WR_L_DISPLAY  = 24931
 WR_R_DISPLAY  = 24932
 WR_RED_LEDS   = 24933
 WR_GREEN_LEDS = 24934
+LCD_DISPLAY = 24935
+
 
 def main():
     if len(sys.argv) < 2:

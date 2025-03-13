@@ -92,7 +92,7 @@ static const char* peripheral[] = {
 	"display_r",
 	"green_leds",
 	"red_leds",
-	"lcd"
+	"display_lcd"
 };
 
 enum perf_names_idx {
@@ -102,7 +102,7 @@ enum perf_names_idx {
 	IDX_DISPLAYR,
 	IDX_GREENLED,
 	IDX_REDLED,
-	DISPLAYLCD,
+	IDX_DISPLAYLCD,
 };
 static int wr_name_idx = IDX_DISPLAYR;
 static int rd_name_idx = IDX_SWITCH;
@@ -258,9 +258,9 @@ static long int my_ioctl(struct file*, unsigned int cmd, unsigned long arg)
 		write_pointer = bar0_mmio + 0xC0c0; //TODO: update offset
 		wr_name_idx = IDX_DISPLAYR;
 		break;
-	case LCD_DISPLAY:
+	case WR_LCD_DISPLAY:
 		write_pointer = bar0_mmio + 0xC0e0; //TODO: update offset
-		wr_name_idx = DISPLAYLCD;
+		wr_name_idx = IDX_DISPLAYLCD;
 		break;
 	default:
 		printk("my_driver: unknown ioctl command: 0x%X\n", cmd);
@@ -304,8 +304,8 @@ static int __init my_pci_probe(struct pci_dev *dev, const struct pci_device_id *
 	bar0_mmio = pci_iomap(dev, 0, bar_len);
 
 	/* initialize a default peripheral read and write pointer */
-	write_pointer = bar0_mmio + 0xC000; //TODO: update offset
-	read_pointer  = bar0_mmio + 0xC080; //TODO: update offset
+	write_pointer = bar0_mmio + 0xC040; //TODO: update offset
+	read_pointer  = bar0_mmio + 0xC000; //TODO: update offset
 
 	return 0;
 }
