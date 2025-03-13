@@ -84,7 +84,7 @@ void LCD_Init(int fd) {
 
     // According to the datasheet, the LCD needs time to stabilize after power-up.
     // A delay here is recommended
-	LCD_On(int fd);
+	LCD_On(fd);
 	delay_ms(1000);
 
     // Function set - 8 bit, 2 lines, 5x8 font
