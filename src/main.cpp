@@ -74,7 +74,7 @@ void LCD_Init(int fd);
 void LCD_Cmd(int fd, uint8_t command);
 void LCD_Data(int fd, uint8_t data);
 void LCD_String(int fd, char *str);
-int writeLCD(int fd, uint8_t data, uint8_t rs);
+int writeLCD(int fd, uint8_t data, uint8_t rs, uint8_t rw, uint8_t en, uint8_t on);
 
 //---------------------------------------------------------------
 // Initialize the LCD
@@ -116,8 +116,12 @@ void LCD_Init(int fd) {
 //---------------------------------------------------------------
 // Send a command to the LCD
 //---------------------------------------------------------------
+void LCD_On(int fd) {
+	writeLCD(fd, command, 0, 0, 1, 1);
+}
+
 void LCD_Cmd(int fd, uint8_t command) {
-    writeLCD(fd, command, 0);  // RS = 0 for command
+    writeLCD(fd, command, 0, 0, 0, 0);  // RS = 0 for command
 	delay_ms(200);
 }
 
@@ -125,7 +129,7 @@ void LCD_Cmd(int fd, uint8_t command) {
 // Send data to the LCD
 //---------------------------------------------------------------
 void LCD_Data(int fd, uint8_t data) {
-    writeLCD(fd, data, 1);   // RS = 1 for data
+    writeLCD(fd, data, 1, 0, 0, 0);   // RS = 1 for data
 	delay_ms(200);
 }
 
@@ -191,9 +195,9 @@ int writeRightDisplay(int fd, unsigned int value) {
     return 0;
 }
 
-int writeLCD(int fd, uint8_t data, uint8_t rs) {
+int writeLCD(int fd, uint8_t data, uint8_t rs, uint8_t rw, uint8_t en, uint8_t on) {
     // Combine data and RS into a single value
-    unsigned int value_to_send = (rs << 10) | data | (1 << 11) | (1 << 8); 
+    unsigned int value_to_send = (rs << 10) | data | (on << 11) | (en << 8) | (en << 9); 
 
 	std::cout << std::hex << value_to_send;
 
