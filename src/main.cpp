@@ -11,6 +11,13 @@
 
 #include "ioctl_cmds.h"
 
+#include <chrono>
+#include <thread>
+
+void delay_ms(int milliseconds) {
+  std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
+}
+
 // Define LCD pins
 #define LCD_RS_PIN   // Port pin for RS
 #define LCD_RW_PIN   // Port pin for R/W
@@ -80,25 +87,30 @@ void LCD_Init(int fd) {
 
     // Function set - 8 bit, 2 lines, 5x8 font
     LCD_Cmd(fd ,LCD_FUNCTION_SET | LCD_8_BIT_MODE | LCD_2_LINE | LCD_5x8_FONT);
+
+	delay_ms(2);
     // Delays may be needed here
-    LCD_Cmd(fd, LCD_FUNCTION_SET | LCD_8_BIT_MODE | LCD_2_LINE | LCD_5x8_FONT);
+    LCD_Cmd(fd ,LCD_DISPLAY_CONTROL | LCD_DISPLAY_ON | LCD_CURSOR_ON | LCD_BLINK_ON);
+	delay_ms(2);
     // Delays may be needed here
-    LCD_Cmd(fd, LCD_FUNCTION_SET | LCD_8_BIT_MODE | LCD_2_LINE | LCD_5x8_FONT);
+    LCD_Cmd(fd, LCD_ENTRY_MODE_SET | LCD_ENTRY_SHIFT_DEC | LCD_ENTRY_LEFT);
+	delay_ms(2);
 
     // Display control - turn display off
-    LCDDisplayControl = LCD_DISPLAY_OFF | LCD_CURSOR_OFF | LCD_BLINK_OFF;
-    LCD_Cmd(fd, LCD_DISPLAY_CONTROL | LCDDisplayControl);
+    // LCDDisplayControl = LCD_DISPLAY_OFF | LCD_CURSOR_OFF | LCD_BLINK_OFF;
+    // LCD_Cmd(fd, LCD_DISPLAY_CONTROL | LCDDisplayControl);
 
     // Clear display
     LCD_Cmd(fd, LCD_CLEAR);
+	delay_ms(2);
 
-    // Entry mode set - increment, no shift
-    LCDEntryMode = LCD_ENTRY_LEFT | LCD_ENTRY_SHIFT_DEC;
-    LCD_Cmd(fd, LCD_ENTRY_MODE_SET | LCDEntryMode);
+    // // Entry mode set - increment, no shift
+    // LCDEntryMode = LCD_ENTRY_LEFT | LCD_ENTRY_SHIFT_DEC;
+    // LCD_Cmd(fd, LCD_ENTRY_MODE_SET | LCDEntryMode);
 
     // Display on
-    LCDDisplayControl |= LCD_DISPLAY_ON;
-    LCD_Cmd(fd, LCD_DISPLAY_CONTROL | LCDDisplayControl);
+    // LCDDisplayControl |= LCD_DISPLAY_ON;
+    // LCD_Cmd(fd, LCD_DISPLAY_CONTROL | LCDDisplayControl);
 }
 
 //---------------------------------------------------------------
@@ -106,6 +118,7 @@ void LCD_Init(int fd) {
 //---------------------------------------------------------------
 void LCD_Cmd(int fd, uint8_t command) {
     writeLCD(fd, command, 0);  // RS = 0 for command
+	delay_ms(2);
 }
 
 //---------------------------------------------------------------
@@ -113,6 +126,7 @@ void LCD_Cmd(int fd, uint8_t command) {
 //---------------------------------------------------------------
 void LCD_Data(int fd, uint8_t data) {
     writeLCD(fd, data, 1);   // RS = 1 for data
+	delay_ms(2);
 }
 
 //---------------------------------------------------------------
@@ -121,6 +135,7 @@ void LCD_Data(int fd, uint8_t data) {
 void LCD_String(int fd, char *str) {
     while (*str) {
         LCD_Data(fd, *str++);
+		delay_ms(2);
     }
 }
 
