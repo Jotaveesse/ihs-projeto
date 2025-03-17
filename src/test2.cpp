@@ -59,31 +59,35 @@ int main()
         sevenSegment.setAllDisplaysFromNumber(switchStates);
         sevenSegment.update();
 
-        lcd.home();
+        lcd.clear();
         lcd.sendWrite(std::to_string(switchStates));
 
         if (buttons.isButtonPressed(0))
         {
             buttonCounter++;
             buttonCounter %= 16;
+            std::cout << buttonCounter; 
         }
 
         if (buttons.isButtonReleased(1))
         {
             buttonCounter++;
             buttonCounter %= 16;
+            std::cout << buttonCounter; 
         }
 
         if (switches.isSwitchToggledOn(0))
         {
             switchCounter++;
             switchCounter %= 16;
+            std::cout << switchCounter; 
         }
 
         if (switches.isSwitchToggledOff(1))
         {
             switchCounter++;
             switchCounter %= 16;
+            std::cout << switchCounter; 
         }
 
         sevenSegment.setDisplayFromNumber(7, buttonCounter);
