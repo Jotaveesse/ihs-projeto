@@ -31,23 +31,23 @@ SevenSegmentDisplays::SevenSegmentDisplays(int fileDescriptor, unsigned int comm
 
 int SevenSegmentDisplays::update()
 {
-    // unsigned int stateRight = 0;
-    // for (int i = 0; i < count / 2; ++i)
-    // {
-    //     if (!states[i])
-    //     {
-    //         stateRight |= (1 << i);
-    //     }
-    // }
+    unsigned int stateRight = 0;
+    for (int i = 0; i < count / 2; ++i)
+    {
+        if (!states[i])
+        {
+            stateRight |= (1 << i);
+        }
+    }
 
-    // unsigned int stateLeft = 0;
-    // for (int i = 0; i < count / 2; ++i)
-    // {
-    //     if (!states[i + count / 2])
-    //     {
-    //         stateLeft |= (1 << i);
-    //     }
-    // }
+    unsigned int stateLeft = 0;
+    for (int i = 0; i < count / 2; ++i)
+    {
+        if (!states[i + count / 2])
+        {
+            stateLeft |= (1 << i);
+        }
+    }
 
     if (ioctl(fd, command) < 0)
     {
@@ -70,8 +70,6 @@ int SevenSegmentDisplays::update()
         std::cerr << "write display failed: " << strerror(errno) << std::endl;
         return -1;
     }
-
-    return 0;
 
     printDisplays();
 
