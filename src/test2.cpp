@@ -81,7 +81,7 @@ int main() {
                 std::cout << "Enter text to write: ";
                 std::cin.ignore(); // Clear newline from previous input
                 std::getline(std::cin, text);
-                lcd.write(text);
+                lcd.sendWrite(text);
                 std::cout << "Text written.\n";
                 break;
             case 7:
@@ -89,13 +89,13 @@ int main() {
                 std::cin.ignore(); // Clear newline
                 char c;
                 std::cin.get(c);
-                lcd.write(c);
+                lcd.sendWrite(c);
                 std::cout << "Character written.\n";
                 break;
             case 8:
                 std::cout << "Enter command (hex): ";
                 std::cin >> std::hex >> cmd;
-                lcd.command(cmd);
+                lcd.sendCommand(cmd);
                 std::cout << "Command sent.\n";
                 break;
             case 9:
