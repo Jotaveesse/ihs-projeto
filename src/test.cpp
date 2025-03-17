@@ -14,12 +14,12 @@ int main()
 {
     int fileDescriptor = -1;
 
-    // Open the device driver
-    // fileDescriptor = open("/dev/mydev", O_RDWR);
-    // if (fileDescriptor < 0) {
-    //     std::cerr << "Failed to open device: " << strerror(errno) << std::endl;
-    //     return 1;
-    // }
+    Open the device driver
+    fileDescriptor = open("/dev/mydev", O_RDWR);
+    if (fileDescriptor < 0) {
+        std::cerr << "Failed to open device: " << strerror(errno) << std::endl;
+        return 1;
+    }
 
     Leds redLeds(fileDescriptor, WR_RED_LEDS, 18);
 
@@ -72,7 +72,7 @@ int main()
     // Close the device driver
     if (fileDescriptor != -1)
     {
-        // close(fileDescriptor);
+        close(fileDescriptor);
     }
 
     return 0;
