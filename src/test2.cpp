@@ -92,6 +92,7 @@ int main()
 
         sevenSegment.setDisplayFromNumber(7, buttonCounter);
         sevenSegment.setDisplayFromNumber(6, switchCounter);
+        sevenSegment.update();
 
         std::this_thread::sleep_for(std::chrono::milliseconds(300));
     }
