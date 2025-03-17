@@ -4,8 +4,8 @@
 #include <cerrno>  // Para errno
 #include <iomanip> // Para setw
 #include <iostream>
-#include <unistd.h>     // Para write
-#include <sys/ioctl.h>  // Para ioctl
+#include <unistd.h>    // Para write
+#include <sys/ioctl.h> // Para ioctl
 
 unsigned int segPatterns[] = {
     0x3F, // 0
@@ -85,15 +85,15 @@ void SevenSegmentDisplays::setDisplayFromNumber(unsigned int displayIndex, unsig
 
     for (unsigned int i = 0; i < 7; ++i)
     {
-        states[indexOffset + i] = (segCode & (1 << (6 - i))) != 0;
+        states[indexOffset + i] = (segCode & (1 << i)) != 0;
     }
 }
 
 void SevenSegmentDisplays::setAllDisplaysFromNumber(unsigned int number)
 {
-    
+
     std::vector<unsigned int> digits;
-    
+
     unsigned int tempNumber = number;
     for (unsigned int displayIndex = 0; displayIndex < count / 8; ++displayIndex)
     {
@@ -113,11 +113,11 @@ void SevenSegmentDisplays::setAllDisplaysFromNumberArray(std::vector<unsigned in
         digit = digit % 16;
 
         unsigned int segCode = segPatterns[digit];
-        unsigned int indexOffset = displayIndex * 8;
+        unsigned int indexOffset = (((count / 8) - 1) - displayIndex) * 8;
 
         for (unsigned int i = 0; i < 7; ++i)
         {
-            states[indexOffset + i] = (segCode & (1 << (6 - i))) != 0;
+            states[indexOffset + i] = (segCode & (1 << i)) != 0;
         }
     }
 }
