@@ -9,7 +9,7 @@
 #include <string>
 
 int main() {
-    nt fileDescriptor = -1;
+    int fileDescriptor = -1;
 
     fileDescriptor = open("/dev/mydev", O_RDWR);
     if (fileDescriptor < 0) {
