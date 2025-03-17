@@ -9,9 +9,9 @@ Switches::Switches(int fileDescriptor, unsigned int command, unsigned int switch
 
 int Switches::update()
 {
-    unsigned int number;
-    std::cout << "Enter the switch states as a number: ";
-    std::cin >> number;
+    // unsigned int number;
+    // std::cout << "Enter the switch states as a number: ";
+    // std::cin >> number;
 
     for (unsigned int i = 0; i < count; ++i)
     {

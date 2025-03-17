@@ -68,6 +68,10 @@ int main()
     unsigned int buttonStates = buttons.getStatesAsNumber();
     std::cout << "Button states: " << buttonStates << std::endl;
 
+    unsigned int number;
+    std::cout << "Enter the button states as a number: ";
+    std::cin >> number;
+    
     // Close the device driver
     if (fileDescriptor != -1)
     {

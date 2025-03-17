@@ -135,7 +135,7 @@ void SevenSegmentDisplays::printDisplays()
         // Construir o código do segmento a partir do vetor states
         for (unsigned int i = 0; i < 7; ++i)
         {
-            if (states[indexOffset + i])
+            if (states[count - indexOffset + i])
             {
                 segCode |= (1 << i);
             }
