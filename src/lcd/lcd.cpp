@@ -90,13 +90,13 @@ void LCD::setCursor(int col, int row) {
     setDDRAMAddress(address);
 }
 
-void LCD::write(const std::string& text) {
+void LCD::sendWrite(const std::string& text) {
     for (char c : text) {
-        write(c);
+        sendWrite(c);
     }
 }
 
-void LCD::write(char character) {
+void LCD::sendWrite(char character) {
     setState(LCD_RS_PIN, 1); // Data mode
     sendData(character);
     delayMicroseconds(100); // Adjust as needed

@@ -71,8 +71,8 @@ public:
     void clear();
     void home();
     void setCursor(int col, int row);
-    void write(const std::string &text);
-    void write(char character);
+    void sendWrite(const std::string &text);
+    void sendWrite(char character);
     void sendCommand(unsigned int cmd);
     void setEntryMode(unsigned int flags);
     void setDisplayControl(unsigned int flags);

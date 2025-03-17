@@ -56,7 +56,7 @@ int main()
 
     // Test LCD(Output)
     std::cout << "\n--- Testing LCD (Output) ---" << std::endl;
-    lcd.write(std::to_string(testNumber));
+    lcd.sendWrite(std::to_string(testNumber));
 
     // Test Inputs (Switches and Buttons)
     std::cout << "\n--- Testing Switches (Inputs) ---" << std::endl;
