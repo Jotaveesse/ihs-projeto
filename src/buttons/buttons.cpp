@@ -12,7 +12,7 @@ Buttons::Buttons(int fileDescriptor, unsigned int command, unsigned int buttonCo
 
 int Buttons::update()
 {
-    // unsigned int number;
+    unsigned int number;
     // std::cout << "Enter the button states as a number: ";
     // std::cin >> number;
 
