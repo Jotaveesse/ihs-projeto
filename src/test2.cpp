@@ -57,7 +57,6 @@ int main()
         greenLeds.update();
 
         sevenSegment.setAllDisplaysFromNumber(switchStates);
-        sevenSegment.update();
 
         lcd.clear();
         lcd.sendWrite(std::to_string(switchStates));
