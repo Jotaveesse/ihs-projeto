@@ -57,7 +57,7 @@ int main()
         sevenSegment.setAllDisplaysFromNumber(switchStates);
         sevenSegment.update();
 
-        lcd.clear();
+        lcd.home();
         lcd.sendWrite(std::to_string(switchStates));
 
         std::this_thread::sleep_for(std::chrono::milliseconds(400));
