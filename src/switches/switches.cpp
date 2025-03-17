@@ -1,0 +1,53 @@
+#include "switches.h"
+#include <iostream>
+
+Switches::Switches(int fileDescriptor, unsigned int command, unsigned int switchCount)
+    : InputPeripheral(fileDescriptor, command, switchCount),
+      lastStates(switchCount, false) {}
+
+int Switches::update()
+{
+    // if (ioctl(fd, command) < 0) {
+    //     std::cerr << "ioctl failed: " << strerror(errno) << std::endl;
+    //     return -1;
+    // }
+    // if (read(fd, &value, sizeof(value)) != sizeof(value)) {
+    //     std::cerr << "read failed: " << strerror(errno) << std::endl;
+    //     return -1;
+    // }
+    // return 0;
+
+    unsigned int number;
+    std::cout << "Enter the switch states as a number: ";
+    std::cin >> number;
+
+    for (unsigned int i = 0; i < count; ++i)
+    {
+        lastStates[i] = states[i];
+        states[i] = (number & (1 << i)) != 0;
+    }
+
+    printStates();
+    return 0;
+}
+
+bool Switches::isSwitchOn(unsigned int switchIndex)
+{
+    if (switchIndex >= count)
+        return false;
+    return states[switchIndex];
+}
+
+bool Switches::isSwitchToggledOn(unsigned int switchIndex)
+{
+    if (switchIndex >= count)
+        return false;
+    return !lastStates[switchIndex] && states[switchIndex];
+}
+
+bool Switches::isSwitchToggledOff(unsigned int switchIndex)
+{
+    if (switchIndex >= count)
+        return false;
+    return lastStates[switchIndex] && !states[switchIndex];
+}
