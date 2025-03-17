@@ -8,7 +8,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
-#include "include/ioctl_cmds.h"
+#include "ioctl_cmds.h"
 
 int main()
 {
