@@ -6,8 +6,8 @@
 #include <vector>
 #include <cstring> // Para strerror
 #include <cerrno>  // Para errno
-// #include <unistd.h>     // Para write
-// #include <sys/ioctl.h>  // Para ioctl
+#include <unistd.h>     // Para write
+#include <sys/ioctl.h>  // Para ioctl
 
 // Define LCD pins
 #define LCD_DB0_PIN 0
