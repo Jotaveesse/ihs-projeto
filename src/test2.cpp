@@ -42,7 +42,7 @@ int main()
     unsigned int buttonCounter = 0;
     unsigned int switchCounter = 0;
 
-    while (buttonStates != 0)
+    while (buttonStates != 15)
     {
         switches.update();
         unsigned int switchStates = switches.getStatesAsNumber();
