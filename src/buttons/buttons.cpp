@@ -16,11 +16,6 @@ int Buttons::update()
     // std::cout << "Enter the button states as a number: ";
     // std::cin >> number;
 
-    for (unsigned int i = 0; i < count; ++i)
-    {
-        lastStates[i] = states[i];
-        states[i] = (number & (1 << i)) != 0;
-    }
 
     if (ioctl(fd, command) < 0)
     {
@@ -32,6 +27,13 @@ int Buttons::update()
         std::cerr << "read failed: " << strerror(errno) << std::endl;
         return -1;
     }
+
+    for (unsigned int i = 0; i < count; ++i)
+    {
+        lastStates[i] = states[i];
+        states[i] = (number & (1 << i)) != 0;
+    }
+    
     printStates();
     return 0;
 

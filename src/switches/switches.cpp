@@ -13,11 +13,6 @@ int Switches::update()
     // std::cout << "Enter the switch states as a number: ";
     // std::cin >> number;
 
-    for (unsigned int i = 0; i < count; ++i)
-    {
-        lastStates[i] = states[i];
-        states[i] = (number & (1 << i)) != 0;
-    }
 
     if (ioctl(fd, command) < 0) {
         std::cerr << "ioctl failed: " << strerror(errno) << std::endl;
@@ -27,8 +22,12 @@ int Switches::update()
         std::cerr << "read failed: " << strerror(errno) << std::endl;
         return -1;
     }
-    return 0;
 
+    for (unsigned int i = 0; i < count; ++i)
+    {
+        lastStates[i] = states[i];
+        states[i] = (number & (1 << i)) != 0;
+    }
 
     printStates();
     return 0;
