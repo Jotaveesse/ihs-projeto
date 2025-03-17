@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <vector>
+#include <unistd.h>     // Para write
+#include <sys/ioctl.h>  // Para ioctl
 
 class Peripheral {
 protected:
