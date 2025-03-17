@@ -10,7 +10,7 @@
 #include <string.h>
 #include "ioctl_cmds.h"
 
-int main()
+int main2()
 {
     int fileDescriptor = -1;
 
@@ -71,7 +71,7 @@ int main()
     unsigned int number;
     std::cout << "Enter the button states as a number: ";
     std::cin >> number;
-    
+
     // Close the device driver
     if (fileDescriptor != -1)
     {
