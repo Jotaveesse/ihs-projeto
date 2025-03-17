@@ -73,7 +73,7 @@ public:
     void setCursor(int col, int row);
     void write(const std::string &text);
     void write(char character);
-    void command(unsigned int cmd);
+    void sendCommand(unsigned int cmd);
     void setEntryMode(unsigned int flags);
     void setDisplayControl(unsigned int flags);
     void shift(unsigned int flags);

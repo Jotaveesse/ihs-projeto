@@ -17,23 +17,24 @@ LCD::LCD(int fileDescriptor, unsigned int command)
     : OutputPeripheral(fileDescriptor, command, 12) {}
 
 int LCD::update(){
-    // unsigned int number = 0;
-    // for (int i = 0; i < count; ++i) {
-    //     if (states[i]) {
-    //         number |= (1 << i);
-    //     }
-    // }
-
-    printStates();
+    unsigned int number = 0;
+    for (int i = 0; i < count; ++i) {
+        if (states[i]) {
+            number |= (1 << i);
+        }
+    }
 
     if (ioctl(fd, command) < 0) {
         std::cerr << "ioctl failed: " << strerror(errno) << std::endl;
         return -1;
     }
-    if (write(fd, &number, sizeof(number)) != sizeof(number)) {
+
+    if (write(fd, &number, sizeof(state)) != sizeof(number)) {
         std::cerr << "write failed: " << strerror(errno) << std::endl;
         return -1;
     }
+
+    printStates();
     return 0;
 }
 
@@ -101,7 +102,7 @@ void LCD::write(char character) {
     delayMicroseconds(100); // Adjust as needed
 }
 
-void LCD::command(unsigned int cmd) {
+void LCD::sendCommand(unsigned int cmd) {
     sendInstruction(cmd);
 }
 
