@@ -14,7 +14,6 @@ int main()
 {
     int fileDescriptor = -1;
 
-    Open the device driver
     fileDescriptor = open("/dev/mydev", O_RDWR);
     if (fileDescriptor < 0) {
         std::cerr << "Failed to open device: " << strerror(errno) << std::endl;
