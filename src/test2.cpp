@@ -62,7 +62,7 @@ int main()
         lcd.clear();
         lcd.sendWrite(std::to_string(switchStates));
 
-        if (buttons.isButtonPressed(0))
+        if (buttons.isButtonClicked(0))
         {
             buttonCounter++;
             buttonCounter %= 16;

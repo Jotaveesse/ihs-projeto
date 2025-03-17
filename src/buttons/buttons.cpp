@@ -31,9 +31,9 @@ int Buttons::update()
     for (unsigned int i = 0; i < count; ++i)
     {
         lastStates[i] = states[i];
-        states[i] = (number & (1 << i)) != 0;
+        states[i] = (number & (1 << i)) == 0;
     }
-    
+
     printStates();
     return 0;
 

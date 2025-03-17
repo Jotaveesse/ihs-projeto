@@ -80,7 +80,8 @@ void SevenSegmentDisplays::setDisplayFromNumber(unsigned int displayIndex, unsig
 {
     number = number % 16;
 
-    unsigned int indexOffset = displayIndex * 8;
+    unsigned int indexOffset = (((count / 8) - 1) - displayIndex) * 8;
+
     unsigned segCode = segPatterns[number];
 
     for (unsigned int i = 0; i < 7; ++i)
