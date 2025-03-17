@@ -34,7 +34,7 @@ int SevenSegmentDisplays::update()
     unsigned int stateRight = 0;
     for (int i = 0; i < count / 2; ++i)
     {
-        if (!states[count - i])
+        if (!states[i])
         {
             stateRight |= (1 << i);
         }
@@ -43,7 +43,7 @@ int SevenSegmentDisplays::update()
     unsigned int stateLeft = 0;
     for (int i = 0; i < count / 2; ++i)
     {
-        if (!states[count / 2 - 1])
+        if (!states[i + count / 2])
         {
             stateLeft |= (1 << i);
         }
@@ -85,7 +85,7 @@ void SevenSegmentDisplays::setDisplayFromNumber(unsigned int displayIndex, unsig
 
     for (unsigned int i = 0; i < 7; ++i)
     {
-        states[indexOffset + i] = (segCode & (1 << i)) != 0;
+        states[indexOffset + i] = (segCode & (1 << (6 - i))) != 0;
     }
 }
 
@@ -117,7 +117,7 @@ void SevenSegmentDisplays::setAllDisplaysFromNumberArray(std::vector<unsigned in
 
         for (unsigned int i = 0; i < 7; ++i)
         {
-            states[indexOffset + i] = (segCode & (1 << i)) != 0;
+            states[indexOffset + i] = (segCode & (1 << (6 - i))) != 0;
         }
     }
 }
@@ -135,7 +135,7 @@ void SevenSegmentDisplays::printDisplays()
         // Construir o código do segmento a partir do vetor states
         for (unsigned int i = 0; i < 7; ++i)
         {
-            if (states[count - indexOffset + i])
+            if (states[indexOffset + i])
             {
                 segCode |= (1 << i);
             }
