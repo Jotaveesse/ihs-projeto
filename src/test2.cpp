@@ -12,7 +12,6 @@
 #include <chrono>
 #include <thread>
 
-
 int main()
 {
     int fileDescriptor = -1;
@@ -40,6 +39,9 @@ int main()
     unsigned int testNumber = 0b101010101010101010;
     unsigned int buttonStates = 1;
 
+    unsigned int buttonCounter = 0;
+    unsigned int switchCounter = 0;
+
     while (buttonStates != 0)
     {
         switches.update();
@@ -60,8 +62,34 @@ int main()
         lcd.home();
         lcd.sendWrite(std::to_string(switchStates));
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(400));
+        if (buttons.isButtonPressed(0))
+        {
+            buttonCounter++;
+            buttonCounter %= 16;
+        }
 
+        if (buttons.isButtonReleased(1))
+        {
+            buttonCounter++;
+            buttonCounter %= 16;
+        }
+
+        if (switches.isSwitchToggledOn(0))
+        {
+            switchCounter++;
+            switchCounter %= 16;
+        }
+
+        if (switches.isSwitchToggledOff(1))
+        {
+            switchCounter++;
+            switchCounter %= 16;
+        }
+
+        sevenSegment.setDisplayFromNumber(7, buttonCounter);
+        sevenSegment.setDisplayFromNumber(6, switchCounter);
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(300));
     }
 
     // Close the device driver
