@@ -29,7 +29,7 @@ int LCD::update(){
         return -1;
     }
 
-    if (write(fd, &number, sizeof(state)) != sizeof(number)) {
+    if (write(fd, &number, sizeof(number)) != sizeof(number)) {
         std::cerr << "write failed: " << strerror(errno) << std::endl;
         return -1;
     }
