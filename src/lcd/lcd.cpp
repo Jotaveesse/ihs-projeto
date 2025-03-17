@@ -99,42 +99,42 @@ void LCD::write(char character) {
     delayMicroseconds(100); // Adjust as needed
 }
 
-void LCD::command(uint8_t cmd) {
+void LCD::command(unsigned int cmd) {
     sendInstruction(cmd);
 }
 
-void LCD::setEntryMode(uint8_t flags) {
+void LCD::setEntryMode(unsigned int flags) {
     sendInstruction(LCD_ENTRY_MODE_SET | flags);
     delayMicroseconds(100);
 }
 
-void LCD::setDisplayControl(uint8_t flags) {
+void LCD::setDisplayControl(unsigned int flags) {
     sendInstruction(LCD_DISPLAY_CONTROL | flags);
     delayMicroseconds(100);
 }
 
-void LCD::shift(uint8_t flags) {
+void LCD::shift(unsigned int flags) {
     sendInstruction(LCD_SHIFT | flags);
     delayMicroseconds(100);
 }
 
-void LCD::setCGRAMAddress(uint8_t address) {
+void LCD::setCGRAMAddress(unsigned int address) {
     sendInstruction(LCD_CGRAM_ADDR | (address & 0x3F)); // Only 6 bits for CGRAM address
     delayMicroseconds(100);
 }
 
-void LCD::setDDRAMAddress(uint8_t address) {
+void LCD::setDDRAMAddress(unsigned int address) {
     sendInstruction(LCD_DDRAM_ADDR | (address & 0x7F)); // Only 7 bits for DDRAM address
     delayMicroseconds(100);
 }
 
-uint8_t LCD::readBusyFlagAndAddress() {
+unsigned int LCD::readBusyFlagAndAddress() {
     setState(LCD_RS_PIN, 0);
     setState(LCD_RW_PIN, 1);  // Read mode
     setState(LCD_E_PIN, 1);
     update();
     delayMicroseconds(100);
-    uint8_t data = 0;
+    unsigned int data = 0;
     if (getState(LCD_DB7_PIN)) data |= 0x80;
     if (getState(LCD_DB6_PIN)) data |= 0x40;
     if (getState(LCD_DB5_PIN)) data |= 0x20;
@@ -148,19 +148,19 @@ uint8_t LCD::readBusyFlagAndAddress() {
     return data;
 }
 
-void LCD::writeData(uint8_t data) {
+void LCD::writeData(unsigned int data) {
     setState(LCD_RS_PIN, 1); // Data mode
     sendData(data);
     delayMicroseconds(100); // Adjust as needed
 }
 
-uint8_t LCD::readData() {
+unsigned int LCD::readData() {
     setState(LCD_RS_PIN, 1);
     setState(LCD_RW_PIN, 1);  // Read mode
     setState(LCD_E_PIN, 1);
     update();
     delayMicroseconds(100);
-    uint8_t data = 0;
+    unsigned int data = 0;
     if (getState(LCD_DB7_PIN)) data |= 0x80;
     if (getState(LCD_DB6_PIN)) data |= 0x40;
     if (getState(LCD_DB5_PIN)) data |= 0x20;
@@ -174,7 +174,7 @@ uint8_t LCD::readData() {
     return data;
 }
 
-void LCD::sendData(uint8_t data) {
+void LCD::sendData(unsigned int data) {
     setState(LCD_DB7_PIN, (data >> 7) & 0x01);
     setState(LCD_DB6_PIN, (data >> 6) & 0x01);
     setState(LCD_DB5_PIN, (data >> 5) & 0x01);
@@ -186,7 +186,7 @@ void LCD::sendData(uint8_t data) {
     pulseEnable();
 }
 
-void LCD::sendInstruction(uint8_t instruction) {
+void LCD::sendInstruction(unsigned int instruction) {
     setState(LCD_RS_PIN, 0); // Instruction mode
     sendData(instruction);
 }
