@@ -34,7 +34,7 @@ int SevenSegmentDisplays::update()
     unsigned int stateRight = 0;
     for (int i = 0; i < count / 2; ++i)
     {
-        if (!states[i])
+        if (!states[count - i])
         {
             stateRight |= (1 << i);
         }
@@ -43,7 +43,7 @@ int SevenSegmentDisplays::update()
     unsigned int stateLeft = 0;
     for (int i = 0; i < count / 2; ++i)
     {
-        if (!states[i + count / 2])
+        if (!states[count / 2 - 1])
         {
             stateLeft |= (1 << i);
         }
