@@ -9,6 +9,8 @@
 #include <errno.h>
 #include <string.h>
 #include "ioctl_cmds.h"
+#include <chrono>
+
 
 int main()
 {
@@ -56,6 +58,9 @@ int main()
 
         lcd.clear();
         lcd.sendWrite(std::to_string(switchStates));
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
     }
 
     // Close the device driver

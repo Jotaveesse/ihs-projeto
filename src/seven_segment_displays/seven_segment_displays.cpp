@@ -71,7 +71,7 @@ int SevenSegmentDisplays::update()
         return -1;
     }
 
-    printDisplays();
+    // printDisplays();
 
     return 0;
 }
