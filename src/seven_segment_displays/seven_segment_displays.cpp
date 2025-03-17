@@ -4,8 +4,8 @@
 #include <cerrno>  // Para errno
 #include <iomanip> // Para setw
 #include <iostream>
-// #include <unistd.h>     // Para write
-// #include <sys/ioctl.h>  // Para ioctl
+#include <unistd.h>     // Para write
+#include <sys/ioctl.h>  // Para ioctl
 
 unsigned int segPatterns[] = {
     0x3F, // 0
@@ -31,47 +31,47 @@ SevenSegmentDisplays::SevenSegmentDisplays(int fileDescriptor, unsigned int comm
 
 int SevenSegmentDisplays::update()
 {
-    unsigned int stateRight = 0;
-    for (int i = 0; i < count / 2; ++i)
+    // unsigned int stateRight = 0;
+    // for (int i = 0; i < count / 2; ++i)
+    // {
+    //     if (!states[i])
+    //     {
+    //         stateRight |= (1 << i);
+    //     }
+    // }
+
+    // unsigned int stateLeft = 0;
+    // for (int i = 0; i < count / 2; ++i)
+    // {
+    //     if (!states[i + count / 2])
+    //     {
+    //         stateLeft |= (1 << i);
+    //     }
+    // }
+
+    if (ioctl(fd, command) < 0)
     {
-        if (!states[i])
-        {
-            stateRight |= (1 << i);
-        }
+        std::cerr << "ioctl display write failed: " << strerror(errno) << std::endl;
+        return -1;
+    }
+    if (write(fd, &stateRight, sizeof(stateRight)) != sizeof(stateRight))
+    {
+        std::cerr << "write display failed: " << strerror(errno) << std::endl;
+        return -1;
     }
 
-    unsigned int stateLeft = 0;
-    for (int i = 0; i < count / 2; ++i)
+    if (ioctl(fd, commandRight) < 0)
     {
-        if (!states[i + count / 2])
-        {
-            stateLeft |= (1 << i);
-        }
+        std::cerr << "ioctl display write failed: " << strerror(errno) << std::endl;
+        return -1;
+    }
+    if (write(fd, &stateLeft, sizeof(stateLeft)) != sizeof(stateLeft))
+    {
+        std::cerr << "write display failed: " << strerror(errno) << std::endl;
+        return -1;
     }
 
-    // if (ioctl(fd, command) < 0)
-    // {
-    //     std::cerr << "ioctl display write failed: " << strerror(errno) << std::endl;
-    //     return -1;
-    // }
-    // if (write(fd, &stateRight, sizeof(stateRight)) != sizeof(stateRight))
-    // {
-    //     std::cerr << "write display failed: " << strerror(errno) << std::endl;
-    //     return -1;
-    // }
-
-    // if (ioctl(fd, commandRight) < 0)
-    // {
-    //     std::cerr << "ioctl display write failed: " << strerror(errno) << std::endl;
-    //     return -1;
-    // }
-    // if (write(fd, &stateLeft, sizeof(stateLeft)) != sizeof(stateLeft))
-    // {
-    //     std::cerr << "write display failed: " << strerror(errno) << std::endl;
-    //     return -1;
-    // }
-
-    // return 0;
+    return 0;
 
     printDisplays();
 

@@ -4,10 +4,11 @@
 #include "seven_segment_displays/seven_segment_displays.h"
 #include "lcd/lcd.h"
 #include <iostream>
-// #include <unistd.h>
+#include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
+#include "include/ioctl_cmds.h"
 
 int main()
 {
@@ -20,17 +21,17 @@ int main()
     //     return 1;
     // }
 
-    Leds redLeds(fileDescriptor, 0, 18);
+    Leds redLeds(fileDescriptor, WR_RED_LEDS, 18);
 
-    Leds greenLeds(fileDescriptor, 0, 9);
+    Leds greenLeds(fileDescriptor, WR_GREEN_LEDS, 9);
 
-    Switches switches(fileDescriptor, 0, 18);
+    Switches switches(fileDescriptor, RD_SWITCHES, 18);
 
-    Buttons buttons(fileDescriptor, 0, 4);
+    Buttons buttons(fileDescriptor, RD_PBUTTONS, 4);
 
-    SevenSegmentDisplays sevenSegment(fileDescriptor, 0, 0, 8);
+    SevenSegmentDisplays sevenSegment(fileDescriptor, WR_L_DISPLAY, WR_R_DISPLAY, 8);
 
-    LCD lcd(fileDescriptor, 0);
+    LCD lcd(fileDescriptor, WR_LCD_DISPLAY);
     lcd.init();
 
     unsigned int testNumber = 0b101010101010101010;

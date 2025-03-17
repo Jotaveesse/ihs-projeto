@@ -2,6 +2,8 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
+#include <unistd.h>     // Para write
+#include <sys/ioctl.h>  // Para ioctl
 
 void delayMicroseconds(int us) {
     std::this_thread::sleep_for(std::chrono::microseconds(us));
@@ -15,23 +17,23 @@ LCD::LCD(int fileDescriptor, unsigned int command)
     : OutputPeripheral(fileDescriptor, command, 12) {}
 
 int LCD::update(){
-    unsigned int number = 0;
-    for (int i = 0; i < count; ++i) {
-        if (states[i]) {
-            number |= (1 << i);
-        }
-    }
+    // unsigned int number = 0;
+    // for (int i = 0; i < count; ++i) {
+    //     if (states[i]) {
+    //         number |= (1 << i);
+    //     }
+    // }
 
     printStates();
 
-    // if (ioctl(fd, command) < 0) {
-    //     std::cerr << "ioctl failed: " << strerror(errno) << std::endl;
-    //     return -1;
-    // }
-    // if (write(fd, &number, sizeof(number)) != sizeof(number)) {
-    //     std::cerr << "write failed: " << strerror(errno) << std::endl;
-    //     return -1;
-    // }
+    if (ioctl(fd, command) < 0) {
+        std::cerr << "ioctl failed: " << strerror(errno) << std::endl;
+        return -1;
+    }
+    if (write(fd, &number, sizeof(number)) != sizeof(number)) {
+        std::cerr << "write failed: " << strerror(errno) << std::endl;
+        return -1;
+    }
     return 0;
 }
 

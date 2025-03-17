@@ -3,35 +3,35 @@
 #include <thread>       // Para std::this_thread
 #include <cstring>      // Para strerror
 #include <cerrno>       // Para errno
-// #include <unistd.h>     // Para write
-// #include <sys/ioctl.h>  // Para ioctl
+#include <unistd.h>     // Para write
+#include <sys/ioctl.h>  // Para ioctl
 
 Buttons::Buttons(int fileDescriptor, unsigned int command, unsigned int buttonCount)
     : InputPeripheral(fileDescriptor, command, buttonCount),
       lastStates(buttonCount, false) {}
 
 int Buttons::update() {
-      // if (ioctl(fd, command) < 0) {
-    //     std::cerr << "ioctl failed: " << strerror(errno) << std::endl;
-    //     return -1;
-    // }
-    // if (read(fd, &value, sizeof(value)) != sizeof(value)) {
-    //     std::cerr << "read failed: " << strerror(errno) << std::endl;
-    //     return -1;
-    // }
-    // return 0;
-
-    unsigned int number;
-    std::cout << "Enter the button states as a number: ";
-    std::cin >> number;
-
-    for (unsigned int i = 0; i < count; ++i) {
-        lastStates[i] = states[i];
-        states[i] = (number & (1 << i)) != 0;
+      if (ioctl(fd, command) < 0) {
+        std::cerr << "ioctl failed: " << strerror(errno) << std::endl;
+        return -1;
     }
-
+    if (read(fd, &value, sizeof(value)) != sizeof(value)) {
+        std::cerr << "read failed: " << strerror(errno) << std::endl;
+        return -1;
+    }
     printStates();
     return 0;
+
+    // unsigned int number;
+    // std::cout << "Enter the button states as a number: ";
+    // std::cin >> number;
+
+    // for (unsigned int i = 0; i < count; ++i) {
+    //     lastStates[i] = states[i];
+    //     states[i] = (number & (1 << i)) != 0;
+    // }
+
+    // return 0;
 }
 
 bool Buttons::isButtonPressed(unsigned int button) {
