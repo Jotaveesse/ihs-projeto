@@ -10,7 +10,7 @@
 #include <string.h>
 #include "ioctl_cmds.h"
 
-int main2()
+int main1()
 {
     int fileDescriptor = -1;
 
