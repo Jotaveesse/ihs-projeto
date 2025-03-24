@@ -39,6 +39,7 @@ void red_leds_module(Buttons buttons, Switches switches, Leds redLeds, Leds gree
         
         std::this_thread::sleep_for(std::chrono::milliseconds(300));
         redLeds.update();
+        buttons.update();
     }
 }
 
