@@ -13,6 +13,7 @@
 #include <thread>
 #include <omp.h>
 #include <mutex>
+#include <random>
 
 std::vector<char>
     array1 = {
@@ -79,6 +80,12 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
     unsigned int buttonStates = 0;
     bool deactivated = false;
 
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dist(0, 2);
+
+    std::vector<int> ledModes(redLeds->getCount());
+
     while (buttonStates != 15)
     {
         if (!deactivated)
@@ -86,15 +93,28 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
             buttonStates = buttons->getStatesAsNumber();
             switchesStates = switches->getStatesAsNumber();
 
-            if(buttons->isButtonPressedLong(0, 2000)){
-                redLeds->blink(0, 1000);
-                redLeds->blink(1, 2000);
-                redLeds->blink(2, 4000);
+            if (buttons->isButtonPressedLong(0, 2000))
+            {
             }
 
-
+            for (unsigned int i = 0; i < redLeds->getCount(); ++i)
+            {
+                switch (ledModes[i])
+                {
+                case 0: // Off
+                    redLeds->setState(i, false);
+                    break;
+                case 1: // On
+                    redLeds->setState(i, true);
+                    break;
+                case 2: // Blink
+                    redLeds->blink(i, 500);
+                    break;
+                }
+            }
         }
-        else{
+        else
+        {
             redLeds->setAllStates(true);
         }
 
