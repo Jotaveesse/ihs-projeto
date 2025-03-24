@@ -13,6 +13,35 @@
 #include <thread>
 #include <omp.h>
 
+
+void buttons_module(Buttons buttons, Switches switches, Leds redLeds, Leds greenLeds, SevenSegmentDisplays sevenSegment, LCD lcd)
+{
+    unsigned int buttonStates = 0;
+
+    while (buttonStates != 15)
+    {
+
+        buttonStates = buttons.getStatesAsNumber();
+        
+        std::this_thread::sleep_for(std::chrono::milliseconds(300));
+        buttons.update();
+    }
+}
+
+void red_leds_module(Buttons buttons, Switches switches, Leds redLeds, Leds greenLeds, SevenSegmentDisplays sevenSegment, LCD lcd)
+{
+    unsigned int buttonStates = 0;
+
+    while (buttonStates != 15)
+    {
+        buttonStates = buttons.getStatesAsNumber();
+        redLeds.setStatesFromNumber(buttonStates);
+        
+        std::this_thread::sleep_for(std::chrono::milliseconds(300));
+        redLeds.update();
+    }
+}
+
 int main()
 {
     int fileDescriptor = -1;
@@ -52,32 +81,4 @@ int main()
     }
 
     return 0;
-}
-
-void buttons_module(Buttons buttons, Switches switches, Leds redLeds, Leds greenLeds, SevenSegmentDisplays sevenSegment, LCD lcd)
-{
-    unsigned int buttonStates = 0;
-
-    while (buttonStates != 15)
-    {
-
-        buttonStates = buttons.getStatesAsNumber();
-        
-        std::this_thread::sleep_for(std::chrono::milliseconds(300));
-        buttons.update();
-    }
-}
-
-void red_leds_module(Buttons buttons, Switches switches, Leds redLeds, Leds greenLeds, SevenSegmentDisplays sevenSegment, LCD lcd)
-{
-    unsigned int buttonStates = 0;
-
-    while (buttonStates != 15)
-    {
-        buttonStates = buttons.getStatesAsNumber();
-        redLeds.setStatesFromNumber(buttonStates);
-        
-        std::this_thread::sleep_for(std::chrono::milliseconds(300));
-        redLeds.update();
-    }
 }
