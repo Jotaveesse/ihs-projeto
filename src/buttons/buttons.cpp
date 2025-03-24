@@ -32,6 +32,12 @@ int Buttons::update()
     {
         lastStates[i] = states[i];
         states[i] = (number & (1 << i)) == 0;
+
+        if (states[i] && buttonPressStartTimes[i] == std::chrono::time_point<std::chrono::high_resolution_clock>::min()) {
+            buttonPressStartTimes[i] = std::chrono::high_resolution_clock::now();
+        } else if (!states[i]) {
+            buttonPressStartTimes[i] = std::chrono::time_point<std::chrono::high_resolution_clock>::min();
+        }
     }
 
     printStates();
@@ -66,22 +72,16 @@ bool Buttons::isButtonPressedLong(unsigned int button, unsigned int duration)
     if (button >= count)
         return false;
 
-    if (!states[button])
-    {
+    if (!states[button]) {
         return false;
     }
 
-    auto startTime = std::chrono::high_resolution_clock::now();
-    while (states[button])
-    {
-        auto currentTime = std::chrono::high_resolution_clock::now();
-        auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - startTime).count();
-        if (elapsedTime >= duration)
-        {
-            return true;
-        }
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        update();
+    if (buttonPressStartTimes[button] == std::chrono::time_point<std::chrono::high_resolution_clock>::min()) {
+        return false;
     }
-    return false;
+
+    auto currentTime = std::chrono::high_resolution_clock::now();
+    auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - buttonPressStartTimes[button]).count();
+
+    return elapsedTime >= duration;
 }

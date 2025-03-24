@@ -11,6 +11,7 @@
 
 class Buttons : public InputPeripheral {
 private:
+    std::vector<std::chrono::time_point<std::chrono::high_resolution_clock>> buttonPressStartTimes;
     std::vector<bool> lastStates;
 
 public:

@@ -61,6 +61,7 @@ int main()
         lcd.clear();
         lcd.sendWrite(std::to_string(switchStates));
 
+
         if (buttons.isButtonClicked(0))
         {
             buttonCounter++;
@@ -69,6 +70,12 @@ int main()
         }
 
         if (buttons.isButtonReleased(1))
+        {
+            buttonCounter++;
+            buttonCounter %= 16;
+            std::cout << buttonCounter; 
+        }
+        if (buttons.isButtonPressedLong(2))
         {
             buttonCounter++;
             buttonCounter %= 16;
