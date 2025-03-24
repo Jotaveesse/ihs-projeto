@@ -184,6 +184,7 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
             // confirmação da escolha
             if (heldButton && buttons->isButtonReleased(3))
             {
+                std::cerr << "confirmation" << std::endl;
                 heldButton = false;
                 bool correctCombination = false;
 
@@ -249,7 +250,12 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
                     break;
                 }
 
-                deactivated = correctCombination;
+                if(correctCombination){
+                    deactivated = true;
+                }
+                else{
+                    redLeds->setAllStates(false);
+                }
             }
         }
         else
