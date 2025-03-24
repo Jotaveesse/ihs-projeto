@@ -61,7 +61,7 @@ bool containsLetter(const std::string &str)
     return std::any_of(str.begin(), str.end(), ::isalpha);
 }
 
-std::vector<char> intToHexChar(int value)
+char intToHexChar(int value)
 {
     char hexChars = 0;
 
