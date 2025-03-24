@@ -145,6 +145,7 @@ void lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *green
             for (unsigned int i = 0; i < 10; i++)
             {
                 lcd->sendWrite(array1[i]);
+                lcd->sendWrite(" ");
             }
             
             lcd->update();
