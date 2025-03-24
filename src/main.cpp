@@ -12,14 +12,6 @@
 #include <chrono>
 #include <thread>
 #include <omp.h>
-#include <mutex>
-
-std::mutex buttonsMutex;
-std::mutex switchesMutex;
-std::mutex redLedsMutex;
-std::mutex greenLedsMutex;
-std::mutex sevenSegmentMutex;
-std::mutex lcdMutex;
 
 void buttons_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd)
 {
@@ -27,17 +19,12 @@ void buttons_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *g
 
     while (buttonStates != 15)
     {
-        {
-            std::lock_guard<std::mutex> lock(buttonsMutex);
-            buttonStates = buttons->getStatesAsNumber();
-        }
+
+        buttonStates = buttons->getStatesAsNumber();
 
         std::this_thread::sleep_for(std::chrono::milliseconds(300));
-
-        {
-            std::lock_guard<std::mutex> lock(buttonsMutex);
-            buttons->update();
-        }
+        buttons->printStates();
+        buttons->update();
     }
 }
 
@@ -47,16 +34,12 @@ void switches_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
 
     while (buttonStates != 15)
     {
-        {
-            std::lock_guard<std::mutex> lock(buttonsMutex);
-            buttonStates = buttons->getStatesAsNumber();
-        }
+
+        buttonStates = buttons->getStatesAsNumber();
 
         std::this_thread::sleep_for(std::chrono::milliseconds(300));
-        {
-            std::lock_guard<std::mutex> lock(switchesMutex);
-            switches->update();
-        }
+        switches->printStates();
+        switches->update();
     }
 }
 
@@ -67,26 +50,13 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
 
     while (buttonStates != 15)
     {
-        {
-            std::lock_guard<std::mutex> lock(buttonsMutex);
-            buttonStates = buttons->getStatesAsNumber();
-        }
-        {
-            std::lock_guard<std::mutex> lock(switchesMutex);
-            switchesStates = switches->getStatesAsNumber();
-        }
+        buttonStates = buttons->getStatesAsNumber();
+        switchesStates = switches->getStatesAsNumber();
 
-        {
-            std::lock_guard<std::mutex> lock(redLedsMutex);
-            redLeds->setStatesFromNumber(switchesStates);
-        }
+        redLeds->setStatesFromNumber(switchesStates);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(300));
-
-        {
-            std::lock_guard<std::mutex> lock(redLedsMutex);
-            redLeds->update();
-        }
+        redLeds->update();
     }
 }
 
@@ -96,22 +66,12 @@ void green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds
 
     while (buttonStates != 15)
     {
-        {
-            std::lock_guard<std::mutex> lock(buttonsMutex);
-            buttonStates = buttons->getStatesAsNumber();
-        }
+        buttonStates = buttons->getStatesAsNumber();
 
-        {
-            std::lock_guard<std::mutex> lock(greenLedsMutex);
-            greenLeds->setStatesFromNumber(buttonStates);
-        }
+        greenLeds->setStatesFromNumber(buttonStates);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(300));
-
-        {
-            std::lock_guard<std::mutex> lock(greenLedsMutex);
-            greenLeds->update();
-        }
+        greenLeds->update();
     }
 }
 
@@ -122,26 +82,13 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
 
     while (buttonStates != 15)
     {
-        {
-            std::lock_guard<std::mutex> lock(buttonsMutex);
-            buttonStates = buttons->getStatesAsNumber();
-        }
-        {
-            std::lock_guard<std::mutex> lock(switchesMutex);
-            switchesStates = switches->getStatesAsNumber();
-        }
+        buttonStates = buttons->getStatesAsNumber();
+        switchesStates = switches->getStatesAsNumber();
 
-        {
-            std::lock_guard<std::mutex> lock(sevenSegmentMutex);
-            sevenSegment->setAllDisplaysFromNumber(switchesStates);
-        }
+        sevenSegment->setAllDisplaysFromNumber(switchesStates);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(300));
-
-        {
-            std::lock_guard<std::mutex> lock(sevenSegmentMutex);
-            sevenSegment->update();
-        }
+        sevenSegment->update();
     }
 }
 
@@ -152,27 +99,14 @@ void lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *green
 
     while (buttonStates != 15)
     {
-        {
-            std::lock_guard<std::mutex> lock(buttonsMutex);
-            buttonStates = buttons->getStatesAsNumber();
-        }
-        {
-            std::lock_guard<std::mutex> lock(switchesMutex);
-            switchesStates = switches->getStatesAsNumber();
-        }
+        buttonStates = buttons->getStatesAsNumber();
+        switchesStates = switches->getStatesAsNumber();
 
-        {
-            std::lock_guard<std::mutex> lock(lcdMutex);
-            lcd->clear();
-            lcd->sendWrite(std::to_string(switchesStates));
-        }
+        lcd->clear();
+        lcd->sendWrite(std::to_string(switchesStates));
 
         std::this_thread::sleep_for(std::chrono::milliseconds(300));
-
-        {
-            std::lock_guard<std::mutex> lock(lcdMutex);
-            lcd->update();
-        }
+        lcd->update();
     }
 }
 
