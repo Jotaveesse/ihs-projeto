@@ -4,7 +4,7 @@
 #include <chrono>       // Para std::chrono
 
 Leds::Leds(int fileDescriptor, unsigned int command, unsigned int ledCount)
-    : OutputPeripheral(fileDescriptor, command, ledCount) {}
+    : OutputPeripheral(fileDescriptor, command, ledCount),
     startTime(std::chrono::high_resolution_clock::now()) {}
 int Leds::update()
 {
