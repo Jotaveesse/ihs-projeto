@@ -87,9 +87,9 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
             switchesStates = switches->getStatesAsNumber();
 
             if(buttons->isButtonPressedLong(0, 2000)){
-                redLeds.blink(0, 1000);
-                redLeds.blink(1, 2000);
-                redLeds.blink(2, 4000);
+                redLeds->blink(0, 1000);
+                redLeds->blink(1, 2000);
+                redLeds->blink(2, 4000);
             }
 
 
