@@ -61,7 +61,7 @@ int main()
     LCD lcd(fileDescriptor, WR_LCD_DISPLAY);
     lcd.init();
 
-#pragma omp parallel sections
+#pragma omp parallel sections num_threads(2)
     {
 #pragma omp section
         {
