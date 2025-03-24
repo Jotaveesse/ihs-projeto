@@ -75,7 +75,7 @@ int main()
             buttonCounter %= 16;
             std::cout << buttonCounter; 
         }
-        if (buttons.isButtonPressedLong(2))
+        if (buttons.isButtonPressedLong(2, 3000))
         {
             buttonCounter++;
             buttonCounter %= 16;
