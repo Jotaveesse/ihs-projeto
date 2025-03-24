@@ -13,18 +13,32 @@
 #include <thread>
 #include <omp.h>
 
+C++
+
+#include "buttons/buttons.h"
+#include "switches/switches.h"
+#include "leds/leds.h"
+#include "seven_segment_displays/seven_segment_displays.h"
+#include "lcd/lcd.h"
+#include <iostream>
+#include <chrono>
+#include <thread>
+#include <mutex>
+
+std::mutex deviceMutex; // Single mutex for all updates
+
 void buttons_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd)
 {
     unsigned int buttonStates = 0;
 
     while (buttonStates != 15)
     {
-
         buttonStates = buttons->getStatesAsNumber();
 
-        // std::this_thread::sleep_for(std::chrono::milliseconds(300));
-        // buttons->printStates();
-        buttons->update();
+        {
+            std::lock_guard<std::mutex> lock(deviceMutex);
+            buttons->update();
+        }
     }
 }
 
@@ -34,12 +48,12 @@ void switches_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
 
     while (buttonStates != 15)
     {
-
         buttonStates = buttons->getStatesAsNumber();
 
-        // std::this_thread::sleep_for(std::chrono::milliseconds(300));
-        // switches->printStates();
-        switches->update();
+        {
+            std::lock_guard<std::mutex> lock(deviceMutex);
+            switches->update();
+        }
     }
 }
 
@@ -55,8 +69,10 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
 
         redLeds->setStatesFromNumber(switchesStates);
 
-        // std::this_thread::sleep_for(std::chrono::milliseconds(300));
-        redLeds->update();
+        {
+            std::lock_guard<std::mutex> lock(deviceMutex);
+            redLeds->update();
+        }
     }
 }
 
@@ -70,8 +86,10 @@ void green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds
 
         greenLeds->setStatesFromNumber(buttonStates);
 
-        // std::this_thread::sleep_for(std::chrono::milliseconds(300));
-        greenLeds->update();
+        {
+            std::lock_guard<std::mutex> lock(deviceMutex);
+            greenLeds->update();
+        }
     }
 }
 
@@ -87,8 +105,10 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
 
         sevenSegment->setAllDisplaysFromNumber(switchesStates);
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(300));
-        sevenSegment->update();
+        {
+            std::lock_guard<std::mutex> lock(deviceMutex);
+            sevenSegment->update();
+        }
     }
 }
 
@@ -105,8 +125,10 @@ void lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *green
         lcd->clear();
         lcd->sendWrite(std::to_string(switchesStates));
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(300));
-        lcd->update();
+        {
+            std::lock_guard<std::mutex> lock(deviceMutex);
+            lcd->update();
+        }
     }
 }
 
