@@ -22,8 +22,8 @@ void buttons_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *g
 
         buttonStates = buttons->getStatesAsNumber();
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(300));
-        buttons->printStates();
+        // std::this_thread::sleep_for(std::chrono::milliseconds(300));
+        // buttons->printStates();
         buttons->update();
     }
 }
@@ -37,8 +37,8 @@ void switches_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
 
         buttonStates = buttons->getStatesAsNumber();
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(300));
-        switches->printStates();
+        // std::this_thread::sleep_for(std::chrono::milliseconds(300));
+        // switches->printStates();
         switches->update();
     }
 }
@@ -55,7 +55,7 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
 
         redLeds->setStatesFromNumber(switchesStates);
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(300));
+        // std::this_thread::sleep_for(std::chrono::milliseconds(300));
         redLeds->update();
     }
 }
@@ -70,7 +70,7 @@ void green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds
 
         greenLeds->setStatesFromNumber(buttonStates);
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(300));
+        // std::this_thread::sleep_for(std::chrono::milliseconds(300));
         greenLeds->update();
     }
 }
