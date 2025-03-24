@@ -33,9 +33,9 @@ int Buttons::update()
         lastStates[i] = states[i];
         states[i] = (number & (1 << i)) == 0;
 
-        if (states[i] && buttonPressStartTimes[i] == std::chrono::time_point<std::chrono::high_resolution_clock>::min()) {
+        if (!lastStates[button] && states[button]) {
             buttonPressStartTimes[i] = std::chrono::high_resolution_clock::now();
-        } else if (!states[i]) {
+        } else if (lastStates[button] && !states[button]) {
             buttonPressStartTimes[i] = std::chrono::time_point<std::chrono::high_resolution_clock>::min();
         }
     }
