@@ -147,11 +147,11 @@ int main()
         }
 #pragma omp section
         {
-            seven_segment_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd);
+            // seven_segment_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd);
         }
 #pragma omp section
         {
-            lcd_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd);
+            // lcd_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd);
         }
     }
 
