@@ -14,32 +14,31 @@
 #include <omp.h>
 
 
-void buttons_module(Buttons buttons, Switches switches, Leds redLeds, Leds greenLeds, SevenSegmentDisplays sevenSegment, LCD lcd)
+void buttons_module(Buttons* buttons, Switches* switches, Leds* redLeds, Leds* greenLeds, SevenSegmentDisplays* sevenSegment, LCD* lcd)
 {
     unsigned int buttonStates = 0;
 
     while (buttonStates != 15)
     {
 
-        buttonStates = buttons.getStatesAsNumber();
+        buttonStates = buttons->getStatesAsNumber();
         
         std::this_thread::sleep_for(std::chrono::milliseconds(300));
-        buttons.update();
+        buttons->update();
     }
 }
 
-void red_leds_module(Buttons buttons, Switches switches, Leds redLeds, Leds greenLeds, SevenSegmentDisplays sevenSegment, LCD lcd)
+void red_leds_module(Buttons* buttons, Switches* switches, Leds* redLeds, Leds* greenLeds, SevenSegmentDisplays* sevenSegment, LCD* lcd)
 {
     unsigned int buttonStates = 0;
 
     while (buttonStates != 15)
     {
-        buttonStates = buttons.getStatesAsNumber();
-        redLeds.setStatesFromNumber(buttonStates);
-        
+        buttonStates = buttons->getStatesAsNumber();
+        redLeds->setStatesFromNumber(buttonStates);
+
         std::this_thread::sleep_for(std::chrono::milliseconds(300));
-        redLeds.update();
-        buttons.update();
+        redLeds->update();
     }
 }
 
@@ -66,12 +65,12 @@ int main()
     {
 #pragma omp section
         {
-            buttons_module(buttons, switches, redLeds, greenLeds, sevenSegment, lcd);
+            buttons_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd);
         }
 
 #pragma omp section
         {
-            red_leds_module(buttons, switches, redLeds, greenLeds, sevenSegment, lcd);
+            red_leds_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd);
         }
     }
 
