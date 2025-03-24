@@ -8,8 +8,8 @@
 
 Buttons::Buttons(int fileDescriptor, unsigned int command, unsigned int buttonCount)
     : InputPeripheral(fileDescriptor, command, buttonCount),
-      lastStates(buttonCount, false),
-    buttonPressStartTimes(buttonCount, NULL) {}
+        lastStates(buttonCount, false),
+        buttonPressStartTimes(buttonCount, NULL) {}
 
 int Buttons::update()
 {

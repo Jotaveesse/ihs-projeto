@@ -12,7 +12,7 @@
 #include <chrono>
 #include <thread>
 
-int main()
+int main2()
 {
     int fileDescriptor = -1;
 

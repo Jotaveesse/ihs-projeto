@@ -13,8 +13,8 @@
 
 class Buttons : public InputPeripheral {
 private:
-    std::vector<unsigned long> buttonPressStartTimes;
     std::vector<bool> lastStates;
+    std::vector<unsigned long> buttonPressStartTimes;
 
 public:
     Buttons(int fileDescriptor, unsigned int command, unsigned int buttonCount);
