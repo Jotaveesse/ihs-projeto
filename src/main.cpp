@@ -99,8 +99,8 @@ void lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *green
     {
         buttonStates = buttons->getStatesAsNumber();
         switchesStates = switches->getStatesAsNumber();
-        
-        lcd.clear();
+
+        lcd->clear();
         lcd->sendWrite(std::to_string(switchesStates));
 
         std::this_thread::sleep_for(std::chrono::milliseconds(300));

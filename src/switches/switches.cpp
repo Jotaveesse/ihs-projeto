@@ -29,7 +29,7 @@ int Switches::update()
         states[i] = (number & (1 << i)) != 0;
     }
 
-    printStates();
+    // printStates();
     return 0;
 }
 

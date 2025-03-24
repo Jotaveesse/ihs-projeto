@@ -23,6 +23,6 @@ int Leds::update()
         return -1;
     }
 
-    printStates();
+    // printStates();
     return 0;
 }

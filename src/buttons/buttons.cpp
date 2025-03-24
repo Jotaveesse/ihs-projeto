@@ -41,7 +41,7 @@ int Buttons::update()
         }
     }
 
-    printStates();
+    // printStates();
     return 0;
 
     // return 0;
