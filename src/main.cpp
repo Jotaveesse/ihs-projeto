@@ -14,6 +14,33 @@
 #include <omp.h>
 #include <mutex>
 
+std::vector<char>
+    array1 = {
+        static_cast<char>(0xC0), // 11000000
+        static_cast<char>(0xD0), // 11010000
+        static_cast<char>(0xAE), // 10101110
+        static_cast<char>(0xD3), // 11010011
+        static_cast<char>(0xB7), // 10110111
+        static_cast<char>(0xFC), // 11111100
+        static_cast<char>(0xC2), // 11000010
+        static_cast<char>(0xD6), // 11010110
+        static_cast<char>(0xD1), // 11010001
+        static_cast<char>(0xD5)  // 11010101
+};
+
+std::vector<char> array2 = {
+    static_cast<char>(0x80), // 10000000
+    static_cast<char>(0x81), // 10000001
+    static_cast<char>(0x82), // 10000010
+    static_cast<char>(0xC6), // 11000110
+    static_cast<char>(0x46), // 01000110
+    static_cast<char>(0xAF), // 10101111
+    static_cast<char>(0xF8), // 11111000
+    static_cast<char>(0xFE), // 11111110
+    static_cast<char>(0xA4), // 10100100
+    static_cast<char>(0x56)  // 01010110
+};
+
 std::mutex deviceMutex; // Single mutex for all updates
 
 void buttons_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd)
@@ -111,11 +138,15 @@ void lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *green
         buttonStates = buttons->getStatesAsNumber();
         switchesStates = switches->getStatesAsNumber();
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
         {
             std::lock_guard<std::mutex> lock(deviceMutex);
             lcd->clear();
-            lcd->sendWrite(std::to_string(switchesStates));
+            for (unsigned int i = 0; i < 10; i++)
+            {
+                lcd->sendWrite(array1[i]);
+            }
+            
             lcd->update();
         }
     }
