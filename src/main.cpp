@@ -13,8 +13,7 @@
 #include <thread>
 #include <omp.h>
 
-
-void buttons_module(Buttons* buttons, Switches* switches, Leds* redLeds, Leds* greenLeds, SevenSegmentDisplays* sevenSegment, LCD* lcd)
+void buttons_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd)
 {
     unsigned int buttonStates = 0;
 
@@ -22,23 +21,89 @@ void buttons_module(Buttons* buttons, Switches* switches, Leds* redLeds, Leds* g
     {
 
         buttonStates = buttons->getStatesAsNumber();
-        
+
         std::this_thread::sleep_for(std::chrono::milliseconds(300));
         buttons->update();
     }
 }
 
-void red_leds_module(Buttons* buttons, Switches* switches, Leds* redLeds, Leds* greenLeds, SevenSegmentDisplays* sevenSegment, LCD* lcd)
+void switches_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd)
+{
+    unsigned int buttonStates = 0;
+
+    while (buttonStates != 15)
+    {
+
+        buttonStates = buttons->getStatesAsNumber();
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(300));
+        switches->update();
+    }
+}
+
+void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd)
+{
+    unsigned int switchesStates = 0;
+    unsigned int buttonStates = 0;
+
+    while (buttonStates != 15)
+    {
+        buttonStates = buttons->getStatesAsNumber();
+        switchesStates = switches->getStatesAsNumber();
+
+        redLeds->setStatesFromNumber(switchesStates);
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(300));
+        redLeds->update();
+    }
+}
+
+void green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd)
 {
     unsigned int buttonStates = 0;
 
     while (buttonStates != 15)
     {
         buttonStates = buttons->getStatesAsNumber();
-        redLeds->setStatesFromNumber(buttonStates);
+
+        greenLeds->setStatesFromNumber(buttonStates);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(300));
-        redLeds->update();
+        greenLeds->update();
+    }
+}
+
+void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd)
+{
+    unsigned int switchesStates = 0;
+    unsigned int buttonStates = 0;
+
+    while (buttonStates != 15)
+    {
+        buttonStates = buttons->getStatesAsNumber();
+        switchesStates = switches->getStatesAsNumber();
+
+        sevenSegment->setAllDisplaysFromNumber(switchesStates);
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(300));
+        sevenSegment->update();
+    }
+}
+
+void lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd)
+{
+    unsigned int switchesStates = 0;
+    unsigned int buttonStates = 0;
+
+    while (buttonStates != 15)
+    {
+        buttonStates = buttons->getStatesAsNumber();
+        switchesStates = switches->getStatesAsNumber();
+
+        lcd->sendWrite(std::to_string(switchesStates));
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(300));
+        lcd->update();
     }
 }
 
@@ -61,19 +126,33 @@ int main()
     LCD lcd(fileDescriptor, WR_LCD_DISPLAY);
     lcd.init();
 
-#pragma omp parallel sections num_threads(2)
+#pragma omp parallel sections num_threads(6)
     {
 #pragma omp section
         {
             buttons_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd);
         }
-
+#pragma omp section
+        {
+            switches_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd);
+        }
 #pragma omp section
         {
             red_leds_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd);
         }
+#pragma omp section
+        {
+            green_leds_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd);
+        }
+#pragma omp section
+        {
+            seven_segment_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd);
+        }
+#pragma omp section
+        {
+            lcd_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd);
+        }
     }
-
 
     if (fileDescriptor != -1)
     {
