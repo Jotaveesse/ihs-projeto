@@ -6,6 +6,8 @@
 #include <vector>
 #include <cstring>      // Para strerror
 #include <cerrno>       // Para errno
+#include <chrono>      // Para std::chrono
+
 // #include <unistd.h>     // Para write
 // #include <sys/ioctl.h>  // Para ioctl
 
