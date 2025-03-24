@@ -76,6 +76,34 @@ int SevenSegmentDisplays::update()
     return 0;
 }
 
+
+unsigned int SevenSegmentDisplays::getNumberFromDisplay(unsigned int displayIndex) {
+    if (displayIndex >= count / 8) {
+        std::cerr << "Error: displayIndex out of range." << std::endl;
+        return 0; // Return 0 as an error indicator
+    }
+
+    unsigned int indexOffset = displayIndex * 8;
+    unsigned char segCode = 0;
+
+    // Reconstruir o código do segmento a partir do vetor states
+    for (unsigned int i = 0; i < 7; ++i) {
+        if (states[indexOffset + i]) {
+            segCode |= (1 << i);
+        }
+    }
+
+    // Procurar o padrão correspondente em segPatterns
+    for (unsigned int i = 0; i < 16; ++i) {
+        if (segPatterns[i] == segCode) {
+            return i; // Retorna o número correspondente
+        }
+    }
+
+    std::cerr << "Error: Segment pattern not found." << std::endl;
+    return 0; // Retorna 0 como um indicador de erro se o padrão não for encontrado
+}
+
 void SevenSegmentDisplays::setDisplayFromNumber(unsigned int displayIndex, unsigned int number)
 {
     number = number % 16;

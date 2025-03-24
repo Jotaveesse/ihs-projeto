@@ -14,6 +14,7 @@
 #include <omp.h>
 #include <mutex>
 #include <random>
+#include <algorithm>
 
 std::vector<char>
     array1 = {
@@ -42,7 +43,47 @@ std::vector<char> array2 = {
     static_cast<char>(0x56)  // 01010110
 };
 
-std::mutex deviceMutex; // Single mutex for all updates
+std::mutex deviceMutex;
+
+bool isVowel(char c)
+{
+    c = std::tolower(c);
+    return (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u');
+}
+
+bool isEvenDigit(char c)
+{
+    return (c == '0' || c == '2' || c == '4' || c == '6' || c == '8');
+}
+
+bool containsLetter(const std::string &str)
+{
+    return std::any_of(str.begin(), str.end(), ::isalpha);
+}
+
+std::vector<char> intToHexChar(int value)
+{
+    std::vector<char> hexChars;
+
+    if (value >= 0 && value <= 15)
+    {
+        if (value < 10)
+        {
+            hexChars.push_back('0' + value); // '0' to '9'
+        }
+        else
+        {
+            hexChars.push_back('A' + (value - 10)); // 'A' to 'F'
+        }
+    }
+    else
+    {
+        // Handle invalid input (optional)
+        std::cerr << "Error: Value out of range (0-15)." << std::endl;
+        hexChars.push_back('?'); // or some other error indicator
+    }
+    return hexChars;
+}
 
 void buttons_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd)
 {
@@ -78,7 +119,12 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
 {
     unsigned int switchesStates = 0;
     unsigned int buttonStates = 0;
+
+    bool heldButton = false;
     bool deactivated = false;
+    int offCount = 0;
+    int onCount = 0;
+    int blinkCount = 0;
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -88,7 +134,21 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
 
     for (unsigned int i = 0; i < redLeds->getCount(); ++i)
     {
-        ledModes[i] = dist(gen);
+        int mode = dist(gen);
+
+        switch (mode)
+        {
+        case 0: // Off
+            offCount++;
+            break;
+        case 1: // On
+            onCount++;
+            break;
+        case 2: // Blink
+            blinkCount++;
+            break;
+        }
+        ledModes[i] = mode;
     }
 
     while (buttonStates != 15)
@@ -98,8 +158,16 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
             buttonStates = buttons->getStatesAsNumber();
             switchesStates = switches->getStatesAsNumber();
 
-            if (buttons->isButtonPressedLong(0, 2000))
+            int idHigher = sevenSegment->getNumberFromDisplay(5);
+            int idLower = sevenSegment->getNumberFromDisplay(4);
+
+            std::string id;
+            id.push_back(intToHexChar(idHigher));
+            id.push_back(intToHexChar(idLower));
+
+            if (buttons->isButtonPressedLong(3, 2000))
             {
+                heldButton = true;
             }
 
             for (unsigned int i = 0; i < redLeds->getCount(); ++i)
@@ -116,6 +184,77 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
                     redLeds->blink(i, 500);
                     break;
                 }
+            }
+
+            // confirmação da escolha
+            if (heldButton && buttons->isButtonReleased(3))
+            {
+                heldButton = false;
+                bool correctCombination = false;
+
+                switch (ledModes[redLeds->getCount() - 1])
+                {
+                    ccase 1 : // On
+                              if (blinkCount == offCount)
+                    {
+                        correctCombination = switchesStates == 0b000000000000000111;
+                    }
+                    else if (offCount > blinkCount)
+                    {
+                        correctCombination = switchesStates == 0b000000000000001111;
+                    }
+                    else if (offCount > 5 && std::any_of(id.begin(), id.end(), isVowel))
+                    {
+                        correctCombination = switchesStates == 0b111000000000000000;
+                    }
+                    else if (onCount > 6)
+                    {
+                        correctCombination = switchesStates == 0b000000000000111111;
+                    }
+                    else
+                    {
+                        correctCombination = switchesStates == 0b111000000000000111;
+                    }
+                    break;
+                case 2: // Blink
+                    if (onCount > blinkCount && std::any_of(id.begin(), id.end(), isEvenDigit))
+                    {
+                        correctCombination = switchesStates == 0b000000111110000000;
+                    }
+                    else if (onCount < 7)
+                    {
+                        correctCombination = switchesStates == ((0b111000000000000000) | 0b000000000000000001);
+                    }
+                    else if (offCount == onCount)
+                    {
+                        correctCombination = switchesStates == ((0b111110000000000000) | 0b000000000000000111);
+                    }
+                    else if (blinkCount > offCount)
+                    {
+                        correctCombination = switchesStates == 0b000000111110000000;
+                    }
+                    break;
+                case 0: // Off
+                    if (blinkCount < 5)
+                    {
+                        correctCombination = switchesStates == ((0b111110000000000000) | 0b000000000000000001);
+                    }
+                    else if (blinkCount > offCount && containsLetter(id))
+                    {
+                        correctCombination = switchesStates == 0b111100000000000000;
+                    }
+                    else if (onCount > blinkCount)
+                    {
+                        correctCombination = switchesStates == 0b000000111111111100;
+                    }
+                    else if (blinkCount == offCount)
+                    {
+                        correctCombination = switchesStates == 0b000000000000000000;
+                    }
+                    break;
+                }
+
+                deactivated = correctCombination;
             }
         }
         else
@@ -165,8 +304,8 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
 
         sevenSegment->setAllDisplaysFromNumber(switchesStates);
 
-        sevenSegment->setDisplayFromNumber(7, num2);
-        sevenSegment->setDisplayFromNumber(6, num1);
+        sevenSegment->setDisplayFromNumber(5, num2);
+        sevenSegment->setDisplayFromNumber(4, num1);
 
         {
             std::lock_guard<std::mutex> lock(deviceMutex);
