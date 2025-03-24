@@ -218,11 +218,11 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
                     }
                     else if (onCount < 7)
                     {
-                        correctCombination = switchesStates == ((0b111000000000000000) | 0b000000000000000001);
+                        correctCombination = switchesStates == 0b111000000000000001;
                     }
                     else if (offCount == onCount)
                     {
-                        correctCombination = switchesStates == ((0b111110000000000000) | 0b000000000000000111);
+                        correctCombination = switchesStates == 0b111110000000000111;
                     }
                     else if (blinkCount > offCount)
                     {
@@ -232,7 +232,7 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
                 case 0: // Off
                     if (blinkCount < 5)
                     {
-                        correctCombination = switchesStates == ((0b111110000000000000) | 0b000000000000000001);
+                        correctCombination = switchesStates == 0b111110000000000001;
                     }
                     else if (blinkCount > offCount && containsLetter(id))
                     {
