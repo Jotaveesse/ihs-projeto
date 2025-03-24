@@ -34,9 +34,9 @@ int Buttons::update()
         states[i] = (number & (1 << i)) == 0;
 
         if (!lastStates[i] && states[i]) {
-            buttonPressStartTimes[i] =  std::chrono::duration_cast<std::chrono::milliseconds > (std::chrono::system_clock::now().time_since_epoch()).count();
-        } else if (lastStates[i] && !states[i]) {
             buttonPressStartTimes[i] = NULL;
+        } else if (lastStates[i] && !states[i]) {
+            buttonPressStartTimes[i] =  std::chrono::duration_cast<std::chrono::milliseconds > (std::chrono::system_clock::now().time_since_epoch()).count();
         }
     }
 
