@@ -8,7 +8,8 @@
 
 Buttons::Buttons(int fileDescriptor, unsigned int command, unsigned int buttonCount)
     : InputPeripheral(fileDescriptor, command, buttonCount),
-      lastStates(buttonCount, false) {}
+      lastStates(buttonCount, false),
+    buttonPressStartTimes(buttonCount, unsigned long) {}
 
 int Buttons::update()
 {
@@ -34,9 +35,9 @@ int Buttons::update()
         states[i] = (number & (1 << i)) == 0;
 
         if (!lastStates[i] && states[i]) {
-            buttonPressStartTimes[i] = NULL;
-        } else if (lastStates[i] && !states[i]) {
             buttonPressStartTimes[i] =  std::chrono::duration_cast<std::chrono::milliseconds > (std::chrono::system_clock::now().time_since_epoch()).count();
+        } else if (lastStates[i] && !states[i]) {
+            buttonPressStartTimes[i] = NULL;
         }
     }
 
@@ -82,7 +83,7 @@ bool Buttons::isButtonPressedLong(unsigned int button, unsigned int duration)
 
     auto currentTime =  std::chrono::duration_cast<std::chrono::milliseconds>
         (std::chrono::system_clock::now().time_since_epoch()).count();
-    auto elapsedTime = currentTime - buttonPressStartTimes[button];
+    unsigned long elapsedTime = currentTime - buttonPressStartTimes[button];
 
     return elapsedTime >= duration;
 }
