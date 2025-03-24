@@ -63,25 +63,20 @@ bool containsLetter(const std::string &str)
 
 std::vector<char> intToHexChar(int value)
 {
-    std::vector<char> hexChars;
+    char hexChars = 0;
 
     if (value >= 0 && value <= 15)
     {
         if (value < 10)
         {
-            hexChars.push_back('0' + value); // '0' to '9'
+            hexChars = '0' + value; // '0' to '9'
         }
         else
         {
-            hexChars.push_back('A' + (value - 10)); // 'A' to 'F'
+            hexChars = 'A' + value - 10; // 'A' to 'F'
         }
     }
-    else
-    {
-        // Handle invalid input (optional)
-        std::cerr << "Error: Value out of range (0-15)." << std::endl;
-        hexChars.push_back('?'); // or some other error indicator
-    }
+
     return hexChars;
 }
 
@@ -194,8 +189,8 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
 
                 switch (ledModes[redLeds->getCount() - 1])
                 {
-                    ccase 1 : // On
-                              if (blinkCount == offCount)
+                case 1: // On
+                    if (blinkCount == offCount)
                     {
                         correctCombination = switchesStates == 0b000000000000000111;
                     }

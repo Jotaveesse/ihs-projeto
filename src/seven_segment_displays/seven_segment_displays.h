@@ -16,7 +16,7 @@ public:
 
     int update() override;
 
-    unsigned int SevenSegmentDisplays::getNumberFromDisplay(unsigned int displayIndex);
+    unsigned int getNumberFromDisplay(unsigned int displayIndex);
 
     void setDisplayFromNumber(unsigned int displayIndex, unsigned int number);
 
