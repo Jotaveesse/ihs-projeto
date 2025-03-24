@@ -86,6 +86,10 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
 
     std::vector<int> ledModes(redLeds->getCount());
 
+    for (unsigned int i = 0; i < redLeds->getCount(); ++i) {
+        ledModes[i] = dist(gen);
+    }
+
     while (buttonStates != 15)
     {
         if (!deactivated)
