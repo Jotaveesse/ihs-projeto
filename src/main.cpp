@@ -86,7 +86,8 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
 
     std::vector<int> ledModes(redLeds->getCount());
 
-    for (unsigned int i = 0; i < redLeds->getCount(); ++i) {
+    for (unsigned int i = 0; i < redLeds->getCount(); ++i)
+    {
         ledModes[i] = dist(gen);
     }
 
@@ -151,12 +152,21 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
     unsigned int switchesStates = 0;
     unsigned int buttonStates = 0;
 
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dist(0, 15);
+    int num1 = dist(gen);
+    int num2 = dist(gen);
+
     while (buttonStates != 15)
     {
         buttonStates = buttons->getStatesAsNumber();
         switchesStates = switches->getStatesAsNumber();
 
         sevenSegment->setAllDisplaysFromNumber(switchesStates);
+
+        sevenSegment->setDisplayFromNumber(7, num2);
+        sevenSegment->setDisplayFromNumber(6, num1);
 
         {
             std::lock_guard<std::mutex> lock(deviceMutex);
