@@ -1,10 +1,11 @@
 #include "leds.h"
 #include <unistd.h>     // Para write
 #include <sys/ioctl.h>  // Para ioctl
+#include <chrono>       // Para std::chrono
 
 Leds::Leds(int fileDescriptor, unsigned int command, unsigned int ledCount)
     : OutputPeripheral(fileDescriptor, command, ledCount) {}
-
+    startTime(std::chrono::high_resolution_clock::now()) {}
 int Leds::update()
 {
     unsigned int number = 0;
@@ -25,4 +26,25 @@ int Leds::update()
 
     // printStates();
     return 0;
+}
+
+
+void Leds::blink(unsigned int led, unsigned int intervalMs)
+{
+    if (led >= count)
+    {
+        return; // Invalid LED index
+    }
+
+    auto now = std::chrono::high_resolution_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - startTime).count();
+
+    if ((elapsed / intervalMs) % 2 == 0)
+    {
+        states[led] = true;
+    }
+    else
+    {
+        states[led] = false;
+    }
 }

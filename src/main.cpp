@@ -77,13 +77,26 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
 {
     unsigned int switchesStates = 0;
     unsigned int buttonStates = 0;
+    bool deactivated = false;
 
     while (buttonStates != 15)
     {
-        buttonStates = buttons->getStatesAsNumber();
-        switchesStates = switches->getStatesAsNumber();
+        if (!deactivated)
+        {
+            buttonStates = buttons->getStatesAsNumber();
+            switchesStates = switches->getStatesAsNumber();
 
-        redLeds->setStatesFromNumber(switchesStates);
+            if(buttons->isButtonPressedLong(0, 2000)){
+                redLeds.blink(0, 1000);
+                redLeds.blink(1, 2000);
+                redLeds.blink(2, 4000);
+            }
+
+
+        }
+        else{
+            redLeds->setAllStates(true);
+        }
 
         {
             std::lock_guard<std::mutex> lock(deviceMutex);
@@ -147,7 +160,7 @@ void lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *green
                 lcd->sendWrite(array1[i]);
                 lcd->sendWrite(" ");
             }
-            
+
             lcd->update();
         }
     }
