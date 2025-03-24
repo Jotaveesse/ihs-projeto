@@ -12,17 +12,6 @@
 #include <chrono>
 #include <thread>
 #include <omp.h>
-
-C++
-
-#include "buttons/buttons.h"
-#include "switches/switches.h"
-#include "leds/leds.h"
-#include "seven_segment_displays/seven_segment_displays.h"
-#include "lcd/lcd.h"
-#include <iostream>
-#include <chrono>
-#include <thread>
 #include <mutex>
 
 std::mutex deviceMutex; // Single mutex for all updates
@@ -167,15 +156,15 @@ int main()
         }
 #pragma omp section
         {
-            // green_leds_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd);
+            green_leds_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd);
         }
 #pragma omp section
         {
-            // seven_segment_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd);
+            seven_segment_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd);
         }
 #pragma omp section
         {
-            // lcd_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd);
+            lcd_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd);
         }
     }
 
