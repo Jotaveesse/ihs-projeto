@@ -133,7 +133,7 @@ int main()
     {
 #pragma omp section
         {
-            buttons_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd);
+            // buttons_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd);
         }
 #pragma omp section
         {
@@ -145,7 +145,7 @@ int main()
         }
 #pragma omp section
         {
-            green_leds_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd);
+            // green_leds_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd);
         }
 #pragma omp section
         {
