@@ -45,7 +45,7 @@ void LCD::init() {
     delayMilliseconds(50);  // Wait for power-up
     
     // Function set (8-bit mode, 2 lines, 5x8 font)
-    sendInstruction(LCD_FUNCTION_SET | LCD_8_BIT_MODE | LCD_2_LINE | LCD_5x8_FONT);
+    sendInstruction(LCD_FUNCTION_SET | LCD_8_BIT_MODE | LCD_1_LINE | LCD_5x10_FONT);
     delayMicroseconds(100);
 
     // Display control (Display on, cursor off, blink off)
