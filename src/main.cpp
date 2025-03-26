@@ -368,19 +368,19 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
         buttonReleased = false;
         if (buttons->isButtonPressed(0))
         {
-            buttonPressed = 0;
+            buttonPressed = 3;
         }
         if (buttons->isButtonPressed(1))
         {
-            buttonPressed = 1;
+            buttonPressed = 2;
         }
         if (buttons->isButtonPressed(2))
         {
-            buttonPressed = 2;
+            buttonPressed = 1;
         }
         if (buttons->isButtonPressed(3))
         {
-            buttonPressed = 3;
+            buttonPressed = 0;
         }
         if(buttons->isButtonPressedLong(0, 2000) || buttons->isButtonPressedLong(1, 2000) || buttons->isButtonPressedLong(2, 2000) || buttons->isButtonPressedLong(3, 2000)){
             buttonPressed = NULL;
@@ -391,6 +391,7 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
             chosenButton = buttonPressed + 1;
             buttonReleased = true;
             buttonPressed = NULL;
+            std::cerr << chosenButton << std::endl;
         }
 
         if (buttonReleased)
@@ -398,7 +399,6 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
             std::cerr << "released" << std::endl;
             std::cerr << stage << std::endl;
             std::cerr << displayedNumbers[stage] << std::endl;
-            std::cerr << chosenButton << std::endl;
 
             bool correctButton = false;
             switch (stage+1)
