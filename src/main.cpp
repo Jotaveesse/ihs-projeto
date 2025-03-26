@@ -279,7 +279,7 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
             }
             else
             {
-                subtractTimer(timer, 15);
+                subtractTimer(timer, 15000000);
             }
         }
         {
@@ -320,7 +320,7 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
     bool deactivated = false;
 
     int initialTimer = *timer;
-    unsigned int startTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    unsigned int startTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     unsigned int currTime = startTime;
 
     std::random_device rd;
@@ -345,9 +345,9 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
 
     while (!deactivated && *timer > 0)
     {
-        currTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-        subtractTimer(timer, (currTime - startTime) / 1000);
-        startTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+        currTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+        subtractTimer(timer, (currTime - startTime));
+        startTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
         int dig0 = *timer % 10;
         int dig1 = (*timer % 60) / 10;
@@ -431,7 +431,7 @@ int main()
     LCD lcd(fileDescriptor, WR_LCD_DISPLAY);
     lcd.init();
 
-    int timer = 120;
+    int timer = 120000000;
 
 #pragma omp parallel sections num_threads(6) shared(timer)
     {
