@@ -146,130 +146,127 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
         ledModes[i] = mode;
     }
 
-    while (buttonStates != 15)
+    while (!deactivated)
     {
-        if (!deactivated)
+
+        buttonStates = buttons->getStatesAsNumber();
+        switchesStates = switches->getStatesAsNumber();
+
+        int idHigher = sevenSegment->getNumberFromDisplay(5);
+        int idLower = sevenSegment->getNumberFromDisplay(4);
+
+        std::string id;
+        id.push_back(intToHexChar(idHigher));
+        id.push_back(intToHexChar(idLower));
+
+        if (buttons->isButtonPressedLong(3, 2000))
         {
-            buttonStates = buttons->getStatesAsNumber();
-            switchesStates = switches->getStatesAsNumber();
-
-            int idHigher = sevenSegment->getNumberFromDisplay(5);
-            int idLower = sevenSegment->getNumberFromDisplay(4);
-
-            std::string id;
-            id.push_back(intToHexChar(idHigher));
-            id.push_back(intToHexChar(idLower));
-
-            if (buttons->isButtonPressedLong(3, 2000))
-            {
-                std::cerr << "segurando\n" << std::endl;
-                heldButton = true;
-            }
-
-            for (unsigned int i = 0; i < redLeds->getCount(); ++i)
-            {
-                switch (ledModes[i])
-                {
-                case 0: // Off
-                    redLeds->setState(i, false);
-                    break;
-                case 1: // On
-                    redLeds->setState(i, true);
-                    break;
-                case 2: // Blink
-                    redLeds->blink(i, 500);
-                    break;
-                }
-            }
-
-            // confirmação da escolha
-            if (heldButton && !buttons->isButtonPressed(3))
-            {
-                std::cerr << switchesStates << std::endl;
-                std::cerr << id << std::endl;
-
-                heldButton = false;
-                bool correctCombination = false;
-
-                switch (ledModes[redLeds->getCount() - 1])
-                {
-                case 1: // On
-                    if (blinkCount == offCount)
-                    {
-                        correctCombination = switchesStates == 0b000000000000000111;
-                    }
-                    else if (offCount > blinkCount)
-                    {
-                        correctCombination = switchesStates == 0b000000000000001111;
-                    }
-                    else if (offCount > 5 && std::any_of(id.begin(), id.end(), isVowel))
-                    {
-                        correctCombination = switchesStates == 0b111000000000000000;
-                    }
-                    else if (onCount > 6)
-                    {
-                        correctCombination = switchesStates == 0b000000000000111111;
-                    }
-                    else
-                    {
-                        correctCombination = switchesStates == 0b111000000000000111;
-                    }
-                    break;
-                case 2: // Blink
-                    if (onCount > blinkCount && std::any_of(id.begin(), id.end(), isEvenDigit))
-                    {
-                        correctCombination = switchesStates == 0b000000111110000000;
-                    }
-                    else if (onCount < 7)
-                    {
-                        correctCombination = switchesStates == 0b111000000000000001;
-                    }
-                    else if (offCount == onCount)
-                    {
-                        correctCombination = switchesStates == 0b111110000000000111;
-                    }
-                    else if (blinkCount > offCount)
-                    {
-                        correctCombination = switchesStates == 0b000000111110000000;
-                    }
-                    break;
-                case 0: // Off
-                    if (blinkCount < 5)
-                    {
-                        correctCombination = switchesStates == 0b111110000000000001;
-                    }
-                    else if (blinkCount > offCount && containsLetter(id))
-                    {
-                        correctCombination = switchesStates == 0b111100000000000000;
-                    }
-                    else if (onCount > blinkCount)
-                    {
-                        correctCombination = switchesStates == 0b000000111111111100;
-                    }
-                    else if (blinkCount == offCount)
-                    {
-                        correctCombination = switchesStates == 0b000000000000000000;
-                    }
-                    break;
-                }
-
-                if(correctCombination){
-                    deactivated = true;
-                }
-                else{
-                    redLeds->setAllStates(false);
-                }
-            }
-        }
-        else
-        {
-            redLeds->setAllStates(true);
+            heldButton = true;
         }
 
+        for (unsigned int i = 0; i < redLeds->getCount(); ++i)
+        {
+            switch (ledModes[i])
+            {
+            case 0: // Off
+                redLeds->setState(i, false);
+                break;
+            case 1: // On
+                redLeds->setState(i, true);
+                break;
+            case 2: // Blink
+                redLeds->blink(i, 500);
+                break;
+            }
+        }
+
+        // confirmação da escolha
+        if (heldButton && !buttons->isButtonPressed(3))
+        {
+            heldButton = false;
+            bool correctCombination = false;
+
+            switch (ledModes[redLeds->getCount() - 1])
+            {
+            case 1: // On
+                if (blinkCount == offCount)
+                {
+                    correctCombination = switchesStates == 0b000000000000000111;
+                }
+                else if (offCount > blinkCount)
+                {
+                    correctCombination = switchesStates == 0b000000000000001111;
+                }
+                else if (offCount > 5 && std::any_of(id.begin(), id.end(), isVowel))
+                {
+                    correctCombination = switchesStates == 0b111000000000000000;
+                }
+                else if (onCount > 6)
+                {
+                    correctCombination = switchesStates == 0b000000000000111111;
+                }
+                else
+                {
+                    correctCombination = switchesStates == 0b111000000000000111;
+                }
+                break;
+            case 2: // Blink
+                if (onCount > blinkCount && std::any_of(id.begin(), id.end(), isEvenDigit))
+                {
+                    correctCombination = switchesStates == 0b000000111110000000;
+                }
+                else if (onCount < 7)
+                {
+                    correctCombination = switchesStates == 0b111000000000000001;
+                }
+                else if (offCount == onCount)
+                {
+                    correctCombination = switchesStates == 0b111110000000000111;
+                }
+                else if (blinkCount > offCount)
+                {
+                    correctCombination = switchesStates == 0b000000111110000000;
+                }
+                break;
+            case 0: // Off
+                if (blinkCount < 5)
+                {
+                    correctCombination = switchesStates == 0b111110000000000001;
+                }
+                else if (blinkCount > offCount && containsLetter(id))
+                {
+                    correctCombination = switchesStates == 0b111100000000000000;
+                }
+                else if (onCount > blinkCount)
+                {
+                    correctCombination = switchesStates == 0b000000111111111100;
+                }
+                else if (blinkCount == offCount)
+                {
+                    correctCombination = switchesStates == 0b000000000000000000;
+                }
+                break;
+            }
+
+            if (correctCombination)
+            {
+                deactivated = true;
+            }
+            else
+            {
+                redLeds->setAllStates(false);
+            }
+        }
         {
             std::lock_guard<std::mutex> lock(deviceMutex);
             redLeds->update();
         }
+    }
+
+    {
+        std::lock_guard<std::mutex> lock(deviceMutex);
+        redLeds->setAllStates(true);
+        redLeds->update();
     }
 }
 
