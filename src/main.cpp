@@ -398,9 +398,10 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
             std::cerr << "released" << std::endl;
             std::cerr << stage << std::endl;
             std::cerr << displayedNumbers[stage] << std::endl;
+            std::cerr << chosenButton << std::endl;
 
             bool correctButton = false;
-            switch (stage)
+            switch (stage+1)
             {
             case 1:
                 switch (displayedNumbers[stage])
