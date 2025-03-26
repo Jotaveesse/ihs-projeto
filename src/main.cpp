@@ -382,40 +382,45 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
         {
             buttonPressed = 3;
         }
-        if(buttons->isButtonPressedLong(0, 2000) || buttons->isButtonPressedLong(1, 2000) || buttons->isButtonPressedLong(2, 2000) || buttons->isButtonPressedLong(3, 2000)){
+        if (buttons->isButtonPressedLong(0, 2000) || buttons->isButtonPressedLong(1, 2000) || buttons->isButtonPressedLong(2, 2000) || buttons->isButtonPressedLong(3, 2000))
+        {
             buttonPressed = -1;
         }
 
         if (buttonPressed != -1 && !buttons->isButtonPressed(buttonPressed) && !buttons->isButtonPressedLong(buttonPressed, 2000))
         {
-            chosenButton = 4-buttonPressed;
+            chosenButton = 4 - buttonPressed;
             buttonReleased = true;
             buttonPressed = -1;
         }
 
         if (buttonReleased)
-        {   
+        {
             std::cerr << "released" << std::endl;
             std::cerr << stage << std::endl;
             std::cerr << displayedNumbers[stage] << std::endl;
 
             bool correctButton = false;
-            switch (stage+1)
+            switch (stage + 1)
             {
             case 1:
                 switch (displayedNumbers[stage])
                 {
                 case 1:
                     correctButton = chosenButton == 2;
+                    pressedPositions[stage] = 2;
                     break;
                 case 2:
                     correctButton = chosenButton == 2;
+                    pressedPositions[stage] = 2;
                     break;
                 case 3:
                     correctButton = chosenButton == 1;
+                    pressedPositions[stage] = 1;
                     break;
                 case 4:
                     correctButton = chosenButton == 4;
+                    pressedPositions[stage] = 4;
                     break;
                 }
                 break;
@@ -423,12 +428,20 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
                 switch (displayedNumbers[stage])
                 {
                 case 1:
+                    correctButton = chosenButton == displayedNumbers[1 - 1];
+                    pressedPositions[stage] = displayedNumbers[1 - 1];
                     break;
                 case 2:
+                    correctButton = chosenButton == pressedPositions[1 - 1];
+                    pressedPositions[stage] = pressedPositions[1 - 1];
                     break;
                 case 3:
+                    correctButton = chosenButton == 1;
+                    pressedPositions[stage] = 1;
                     break;
                 case 4:
+                    correctButton = chosenButton == pressedPositions[1 - 1];
+                    pressedPositions[stage] = pressedPositions[1 - 1];
                     break;
                 }
                 break;
@@ -436,12 +449,20 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
                 switch (displayedNumbers[stage])
                 {
                 case 1:
+                    correctButton = chosenButton == pressedPositions[2 - 1];
+                    pressedPositions[stage] = pressedPositions[2 - 1];
                     break;
                 case 2:
+                    correctButton = chosenButton == pressedPositions[1 - 1];
+                    pressedPositions[stage] = pressedPositions[1 - 1];
                     break;
                 case 3:
+                    correctButton = chosenButton == 3;
+                    pressedPositions[stage] = 3;
                     break;
                 case 4:
+                    correctButton = chosenButton == displayedNumbers[2 - 1];
+                    pressedPositions[stage] = displayedNumbers[2 - 1];
                     break;
                 }
                 break;
@@ -449,12 +470,20 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
                 switch (displayedNumbers[stage])
                 {
                 case 1:
+                    correctButton = chosenButton == pressedPositions[2 - 1];
+                    pressedPositions[stage] = pressedPositions[2 - 1];
                     break;
                 case 2:
+                    correctButton = chosenButton == pressedPositions[1 - 1];
+                    pressedPositions[stage] = pressedPositions[1 - 1];
                     break;
                 case 3:
+                    correctButton = chosenButton == pressedPositions[2 - 1];
+                    pressedPositions[stage] = pressedPositions[2 - 1];
                     break;
                 case 4:
+                    correctButton = chosenButton == pressedPositions[3 - 1];
+                    pressedPositions[stage] = pressedPositions[3 - 1];
                     break;
                 }
                 break;
