@@ -290,7 +290,7 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
 
     {
         std::lock_guard<std::mutex> lock(deviceMutex);
-        redLeds->setAllStates(true);
+        redLeds->setAllStates(*timer >= 0);
         redLeds->update();
     }
 }
@@ -507,10 +507,9 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
             sevenSegment->update();
         }
     }
-
     {
         std::lock_guard<std::mutex> lock(deviceMutex);
-        sevenSegment->setAllStates(true);
+        sevenSegment->setAllStates(*timer >= 0);
         sevenSegment->update();
     }
 }
@@ -559,7 +558,7 @@ int main()
     LCD lcd(fileDescriptor, WR_LCD_DISPLAY);
     lcd.init();
 
-    int timer = 180000000;
+    int timer = 180 * 1000000;
 
 #pragma omp parallel sections num_threads(6) shared(timer)
     {
