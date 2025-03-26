@@ -152,8 +152,13 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
         buttonStates = buttons->getStatesAsNumber();
         switchesStates = switches->getStatesAsNumber();
 
-        int idHigher = sevenSegment->getNumberFromDisplay(5);
-        int idLower = sevenSegment->getNumberFromDisplay(4);
+        int idHigher=0;
+        int idLower=0;
+        {
+            std::lock_guard<std::mutex> lock(deviceMutex);
+            idHigher = sevenSegment->getNumberFromDisplay(5);
+            idLower = sevenSegment->getNumberFromDisplay(4);
+        }
 
         std::string id;
         id.push_back(intToHexChar(idHigher));
