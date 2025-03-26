@@ -399,7 +399,7 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
             switch (stage)
             {
             case 1:
-                switch (displayedNumbers(stage))
+                switch (displayedNumbers[stage])
                 {
                 case 1:
                     correctButton = chosenButton == 2;
@@ -416,7 +416,7 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
                 }
                 break;
             case 2:
-                switch (displayedNumbers(stage))
+                switch (displayedNumbers[stage])
                 {
                 case 1:
                     break;
@@ -429,7 +429,7 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
                 }
                 break;
             case 3:
-                switch (displayedNumbers(stage))
+                switch (displayedNumbers[stage])
                 {
                 case 1:
                     break;
@@ -442,7 +442,7 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
                 }
                 break;
             case 4:
-                switch (displayedNumbers(stage))
+                switch (displayedNumbers[stage])
                 {
                 case 1:
                     break;
