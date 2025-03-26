@@ -392,7 +392,6 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
             buttonReleased = true;
             buttonPressed = -1;
         }
-        std::cerr << chosenButton << std::endl;
 
         if (buttonReleased)
         {   
