@@ -287,30 +287,30 @@ void green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds
     }
 }
 
-void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int* timer)
+void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
 {
     unsigned int switchesStates = 0;
     unsigned int buttonStates = 0;
 
     bool deactivated = false;
     int initialTimer = *timer;
-    unsigned int startTime = std::chrono::duration_cast<std::chrono::milliseconds > (std::chrono::system_clock::now().time_since_epoch()).count();
+    unsigned int startTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     unsigned int currTime = startTime;
     while (!deactivated)
     {
-        currTime = std::chrono::duration_cast<std::chrono::milliseconds > (std::chrono::system_clock::now().time_since_epoch()).count();
+        currTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
-        timer = initialTimer - (currTime - startTime);
-        int dig3= timer/600;
-        int dig2= timer/60;
-        int dig1= (timer % 60) / 10;
-        int dig0= timer % 60;
+        *timer = initialTimer - (currTime - startTime);
+        int dig3 = *timer / 600;
+        int dig2 = *timer / 60;
+        int dig1 = (*timer % 60) / 10;
+        int dig0 = *timer % 60;
 
         sevenSegment->setDisplayFromNumber(0, dig0);
         sevenSegment->setDisplayFromNumber(1, dig1);
         sevenSegment->setDisplayFromNumber(2, dig2);
         sevenSegment->setDisplayFromNumber(3, dig3);
-        
+
         {
             std::lock_guard<std::mutex> lock(deviceMutex);
             sevenSegment->update();
