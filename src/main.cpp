@@ -162,6 +162,7 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
 
             if (buttons->isButtonPressedLong(3, 2000))
             {
+                std::cerr << "segurando\n" << std::endl;
                 heldButton = true;
             }
 
