@@ -327,6 +327,12 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dist(1, 4);
 
+    std::uniform_int_distribution<> idDist(0, 15);
+    int num1 = idDist(gen);
+    int num2 = idDist(gen);
+    sevenSegment->setDisplayFromNumber(5, num2);
+    sevenSegment->setDisplayFromNumber(4, num1);
+
     int stage = 0;
     std::vector<int> displayedNumbers(4);
     std::vector<int> pressedPositions(4);
