@@ -80,7 +80,7 @@ char intToHexChar(int value)
     return hexChars;
 }
 
-void buttons_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd)
+void buttons_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
 {
     unsigned int buttonStates = 0;
 
@@ -95,7 +95,7 @@ void buttons_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *g
     }
 }
 
-void switches_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd)
+void switches_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
 {
     unsigned int buttonStates = 0;
 
@@ -110,7 +110,7 @@ void switches_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
     }
 }
 
-void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd)
+void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
 {
     unsigned int switchesStates = 0;
     unsigned int buttonStates = 0;
@@ -146,7 +146,7 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
         ledModes[i] = mode;
     }
 
-    while (!deactivated)
+    while (!deactivated && *timer > 0)
     {
 
         buttonStates = buttons->getStatesAsNumber();
@@ -254,7 +254,7 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
             }
             else
             {
-                redLeds->setAllStates(false);
+                *timer -= 15;
             }
         }
         {
@@ -270,7 +270,7 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
     }
 }
 
-void green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd)
+void green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
 {
     unsigned int buttonStates = 0;
 
@@ -296,7 +296,7 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
     int initialTimer = *timer;
     unsigned int startTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     unsigned int currTime = startTime;
-    while (!deactivated)
+    while (!deactivated && *timer > 0)
     {
         currTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
@@ -324,7 +324,7 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
     }
 }
 
-void lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd)
+void lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
 {
     unsigned int switchesStates = 0;
     unsigned int buttonStates = 0;
@@ -374,19 +374,19 @@ int main()
     {
 #pragma omp section
         {
-            buttons_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd);
+            buttons_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
         }
 #pragma omp section
         {
-            switches_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd);
+            switches_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
         }
 #pragma omp section
         {
-            red_leds_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd);
+            red_leds_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
         }
 #pragma omp section
         {
-            green_leds_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd);
+            green_leds_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
         }
 #pragma omp section
         {
@@ -394,7 +394,7 @@ int main()
         }
 #pragma omp section
         {
-            lcd_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd);
+            lcd_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
         }
     }
 
