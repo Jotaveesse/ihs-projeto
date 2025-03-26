@@ -152,13 +152,8 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
         buttonStates = buttons->getStatesAsNumber();
         switchesStates = switches->getStatesAsNumber();
 
-        int idHigher=0;
-        int idLower=0;
-        {
-            std::lock_guard<std::mutex> lock(deviceMutex);
-            idHigher = sevenSegment->getNumberFromDisplay(5);
-            idLower = sevenSegment->getNumberFromDisplay(4);
-        }
+        int idHigher = sevenSegment->getNumberFromDisplay(5);
+        int idLower = sevenSegment->getNumberFromDisplay(4);
 
         std::string id;
         id.push_back(intToHexChar(idHigher));
@@ -292,31 +287,40 @@ void green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds
     }
 }
 
-void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd)
+void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, *int timer)
 {
     unsigned int switchesStates = 0;
     unsigned int buttonStates = 0;
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dist(0, 15);
-    int num1 = dist(gen);
-    int num2 = dist(gen);
-
-    while (buttonStates != 15)
+    bool deactivated = false;
+    int initialTimer = *timer;
+    unsigned int startTime = std::chrono::duration_cast<std::chrono::milliseconds > (std::chrono::system_clock::now().time_since_epoch()).count();
+    unsigned int currTime = startTime;
+    while (!deactivated)
     {
-        buttonStates = buttons->getStatesAsNumber();
-        switchesStates = switches->getStatesAsNumber();
+        currTime = std::chrono::duration_cast<std::chrono::milliseconds > (std::chrono::system_clock::now().time_since_epoch()).count();
 
-        sevenSegment->setAllDisplaysFromNumber(switchesStates);
+        timer = initialTimer - (currTime - startTime);
+        int dig3= timer/600;
+        int dig2= timer/60;
+        int dig1= (timer % 60) / 10;
+        int dig0= timer % 60;
 
-        sevenSegment->setDisplayFromNumber(5, num2);
-        sevenSegment->setDisplayFromNumber(4, num1);
-
+        sevenSegment->setDisplayFromNumber(0, dig0);
+        sevenSegment->setDisplayFromNumber(1, dig1);
+        sevenSegment->setDisplayFromNumber(2, dig2);
+        sevenSegment->setDisplayFromNumber(3, dig3);
+        
         {
             std::lock_guard<std::mutex> lock(deviceMutex);
             sevenSegment->update();
         }
+    }
+
+    {
+        std::lock_guard<std::mutex> lock(deviceMutex);
+        sevenSegment->setAllStates(true);
+        sevenSegment->update();
     }
 }
 
@@ -364,6 +368,8 @@ int main()
     LCD lcd(fileDescriptor, WR_LCD_DISPLAY);
     lcd.init();
 
+    int timer = 120;
+
 #pragma omp parallel sections num_threads(6)
     {
 #pragma omp section
@@ -384,7 +390,7 @@ int main()
         }
 #pragma omp section
         {
-            seven_segment_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd);
+            seven_segment_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
         }
 #pragma omp section
         {

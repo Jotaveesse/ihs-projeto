@@ -100,8 +100,7 @@ unsigned int SevenSegmentDisplays::getNumberFromDisplay(unsigned int displayInde
         }
     }
 
-    std::cerr << "Error: Segment pattern not found." << std::endl;
-    std::cerr << segCode << std::endl;
+    // std::cerr << "Error: Segment pattern not found." << std::endl
 
     return 0; // Retorna 0 como um indicador de erro se o padrão não for encontrado
 }
