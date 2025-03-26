@@ -279,7 +279,7 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
             }
             else
             {
-                setTimer(timer, 15);
+                subtractTimer(timer, 15);
             }
         }
         {
@@ -318,14 +318,30 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
     unsigned int buttonStates = 0;
 
     bool deactivated = false;
+
     int initialTimer = *timer;
     unsigned int startTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     unsigned int currTime = startTime;
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dist(1, 4);
+
+    int stage = 0;
+    std::vector<int> displayedNumbers(4);
+    std::vector<int> pressedPositions(4);
+
+    for (unsigned int i = 0; i < 4; ++i)
+    {
+        int num = dist(gen);
+        displayedNumbers[i] = num;
+    }
+
     while (!deactivated && *timer > 0)
     {
         currTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-
-        setTimer(timer, initialTimer - (currTime - startTime) / 1000);
+        subtractTimer(timer, (currTime - startTime) / 1000);
+        startTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
         int dig0 = *timer % 10;
         int dig1 = (*timer % 60) / 10;
@@ -336,6 +352,21 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
         sevenSegment->setDisplayFromNumber(1, dig1);
         sevenSegment->setDisplayFromNumber(2, dig2);
         sevenSegment->setDisplayFromNumber(3, dig3);
+
+        sevenSegment->setDisplayFromNumber(6, stage);
+        sevenSegment->setDisplayFromNumber(7, displayedNumbers[stage]);
+
+        switch (stage)
+        {
+        case 1:
+            break;
+        case 2:
+            break;
+        case 3:
+            break;
+        case 4:
+            break;
+        }
 
         {
             std::lock_guard<std::mutex> lock(deviceMutex);
