@@ -287,7 +287,7 @@ void green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds
     }
 }
 
-void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, *int timer)
+void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int* timer)
 {
     unsigned int switchesStates = 0;
     unsigned int buttonStates = 0;
