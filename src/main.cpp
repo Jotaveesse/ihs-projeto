@@ -558,7 +558,7 @@ int main()
     LCD lcd(fileDescriptor, WR_LCD_DISPLAY);
     lcd.init();
 
-    int timer = 180 * 1000000;
+    int timer = 240 * 1000000;
 
 #pragma omp parallel sections num_threads(6) shared(timer)
     {
