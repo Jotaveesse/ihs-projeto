@@ -359,7 +359,7 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
         sevenSegment->setDisplayFromNumber(2, dig2);
         sevenSegment->setDisplayFromNumber(3, dig3);
 
-        sevenSegment->setDisplayFromNumber(6, stage);
+        sevenSegment->setDisplayFromNumber(6, stage+1);
         sevenSegment->setDisplayFromNumber(7, displayedNumbers[stage]);
 
         switch (stage)
