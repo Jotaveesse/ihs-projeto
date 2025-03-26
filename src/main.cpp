@@ -184,7 +184,10 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
             // confirmação da escolha
             if (heldButton && buttons->isButtonReleased(3))
             {
-                std::cerr << "confirmation" << std::endl;
+                std::cerr << "confirmation\n" << std::endl;
+                std::cerr << switchesStates << std::endl;
+                std::cerr << id << std::endl;
+
                 heldButton = false;
                 bool correctCombination = false;
 
