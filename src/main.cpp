@@ -368,19 +368,19 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
         buttonReleased = false;
         if (buttons->isButtonPressed(0))
         {
-            buttonPressed = 3;
+            buttonPressed = 0;
         }
         if (buttons->isButtonPressed(1))
         {
-            buttonPressed = 2;
+            buttonPressed = 1;
         }
         if (buttons->isButtonPressed(2))
         {
-            buttonPressed = 1;
+            buttonPressed = 2;
         }
         if (buttons->isButtonPressed(3))
         {
-            buttonPressed = 0;
+            buttonPressed = 3;
         }
         if(buttons->isButtonPressedLong(0, 2000) || buttons->isButtonPressedLong(1, 2000) || buttons->isButtonPressedLong(2, 2000) || buttons->isButtonPressedLong(3, 2000)){
             buttonPressed = -1;
@@ -388,7 +388,7 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
 
         if (buttonPressed != -1 && !buttons->isButtonPressed(buttonPressed) && !buttons->isButtonPressedLong(buttonPressed, 2000))
         {
-            chosenButton = buttonPressed + 1;
+            chosenButton = 4-buttonPressed;
             buttonReleased = true;
             buttonPressed = -1;
         }
