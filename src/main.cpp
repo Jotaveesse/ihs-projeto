@@ -343,35 +343,132 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
         displayedNumbers[i] = num;
     }
 
+    bool buttonReleased = false;
+    int buttonPressed = NULL;
+    int chosenButton = NULL;
     while (!deactivated && *timer > 0)
     {
         currTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
         subtractTimer(timer, (currTime - startTime));
         startTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
-        int dig0 = (*timer/1000000) % 10;
-        int dig1 = ((*timer/1000000) % 60) / 10;
-        int dig2 = (*timer/1000000) / 60;
-        int dig3 = (*timer/1000000) / 600;
+        int dig0 = (*timer / 1000000) % 10;
+        int dig1 = ((*timer / 1000000) % 60) / 10;
+        int dig2 = (*timer / 1000000) / 60;
+        int dig3 = (*timer / 1000000) / 600;
 
         sevenSegment->setDisplayFromNumber(0, dig0);
         sevenSegment->setDisplayFromNumber(1, dig1);
         sevenSegment->setDisplayFromNumber(2, dig2);
         sevenSegment->setDisplayFromNumber(3, dig3);
 
-        sevenSegment->setDisplayFromNumber(6, stage+1);
+        sevenSegment->setDisplayFromNumber(6, stage + 1);
         sevenSegment->setDisplayFromNumber(7, displayedNumbers[stage]);
 
-        switch (stage)
+        buttonReleased = false;
+        if (buttons->isButtonPressed(0))
         {
-        case 1:
-            break;
-        case 2:
-            break;
-        case 3:
-            break;
-        case 4:
-            break;
+            buttonPressed = 0;
+        }
+        if (buttons->isButtonPressed(1))
+        {
+            buttonPressed = 1;
+        }
+        if (buttons->isButtonPressed(2))
+        {
+            buttonPressed = 2;
+        }
+        if (buttons->isButtonPressed(3))
+        {
+            buttonPressed = 3;
+        }
+        if(buttons->isButtonPressedLong(0, 2000) || buttons->isButtonPressedLong(1, 2000) || buttons->isButtonPressedLong(2, 2000) || buttons->isButtonPressedLong(3, 2000)){
+            buttonPressed = NULL;
+        }
+
+        if (buttonPressed != NULL && !buttons->isButtonPressed(buttonPressed) && !buttons->isButtonPressedLong(buttonPressed, 2000))
+        {
+            chosenButton = buttonPressed + 1;
+            buttonReleased = true;
+            buttonPressed = NULL;
+        }
+
+        if (buttonReleased)
+        {
+            bool correctButton = false;
+            switch (stage)
+            {
+            case 1:
+                switch (displayedNumbers(stage))
+                {
+                case 1:
+                    correctButton = chosenButton == 2;
+                    break;
+                case 2:
+                    correctButton = chosenButton == 2;
+                    break;
+                case 3:
+                    correctButton = chosenButton == 1;
+                    break;
+                case 4:
+                    correctButton = chosenButton == 4;
+                    break;
+                }
+                break;
+            case 2:
+                switch (displayedNumbers(stage))
+                {
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    break;
+                }
+                break;
+            case 3:
+                switch (displayedNumbers(stage))
+                {
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    break;
+                }
+                break;
+            case 4:
+                switch (displayedNumbers(stage))
+                {
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    break;
+                }
+                break;
+            }
+
+            if (correctButton)
+            {
+                stage += 1;
+                if (stage > 4)
+                {
+                    deactivated = true;
+                }
+            }
+            else
+            {
+                stage = 1;
+                subtractTimer(timer, 15000000);
+            }
         }
 
         {
@@ -431,7 +528,7 @@ int main()
     LCD lcd(fileDescriptor, WR_LCD_DISPLAY);
     lcd.init();
 
-    int timer = 120000000;
+    int timer = 180000000;
 
 #pragma omp parallel sections num_threads(6) shared(timer)
     {
