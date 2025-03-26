@@ -349,10 +349,10 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
         subtractTimer(timer, (currTime - startTime));
         startTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
-        int dig0 = *timer % 10;
-        int dig1 = (*timer % 60) / 10;
-        int dig2 = *timer / 60;
-        int dig3 = *timer / 600;
+        int dig0 = (*timer/1000000) % 10;
+        int dig1 = ((*timer/1000000) % 60) / 10;
+        int dig2 = (*timer/1000000) / 60;
+        int dig3 = (*timer/1000000) / 600;
 
         sevenSegment->setDisplayFromNumber(0, dig0);
         sevenSegment->setDisplayFromNumber(1, dig1);
