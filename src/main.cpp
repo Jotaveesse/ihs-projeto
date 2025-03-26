@@ -115,7 +115,6 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
     unsigned int switchesStates = 0;
     unsigned int buttonStates = 0;
 
-    bool releasedButton = false;
     bool heldButton = false;
     bool deactivated = false;
     int offCount = 0;
@@ -167,9 +166,6 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
                 heldButton = true;
             }
 
-            releasedButton = buttons->isButtonReleased(3);
-            std::cerr << releasedButton << std::endl;
-
             for (unsigned int i = 0; i < redLeds->getCount(); ++i)
             {
                 switch (ledModes[i])
@@ -187,7 +183,7 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
             }
 
             // confirmação da escolha
-            if (heldButton && buttons->isButtonReleased(3))
+            if (heldButton && !buttons->isButtonPressed(3))
             {
                 std::cerr << "confirmation\n" << std::endl;
                 std::cerr << switchesStates << std::endl;
