@@ -324,7 +324,7 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
     while (!deactivated && *timer > 0)
     {
         currTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-        
+
         setTimer(timer, initialTimer - (currTime - startTime) / 1000);
 
         int dig0 = *timer % 10;
@@ -396,7 +396,7 @@ int main()
 
     int timer = 120;
 
-#pragma omp parallel sections num_threads(6)
+#pragma omp parallel sections num_threads(6) shared(timer)
     {
 #pragma omp section
         {
