@@ -465,14 +465,14 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
             if (correctButton)
             {
                 stage += 1;
-                if (stage > 4)
+                if (stage >= 4)
                 {
                     deactivated = true;
                 }
             }
             else
             {
-                stage = 1;
+                stage = 0;
                 subtractTimer(timer, 15000000);
             }
         }
