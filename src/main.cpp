@@ -279,7 +279,7 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
             }
             else
             {
-                subtractTimer(timer, 15);
+                setTimer(timer, 15);
             }
         }
         {
