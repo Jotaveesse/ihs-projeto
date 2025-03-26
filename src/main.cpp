@@ -344,8 +344,8 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
     }
 
     bool buttonReleased = false;
-    int buttonPressed = NULL;
-    int chosenButton = NULL;
+    int buttonPressed = -1;
+    int chosenButton = -1;
     while (!deactivated && *timer > 0)
     {
         currTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -383,14 +383,14 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
             buttonPressed = 0;
         }
         if(buttons->isButtonPressedLong(0, 2000) || buttons->isButtonPressedLong(1, 2000) || buttons->isButtonPressedLong(2, 2000) || buttons->isButtonPressedLong(3, 2000)){
-            buttonPressed = NULL;
+            buttonPressed = -1;
         }
 
-        if (buttonPressed != NULL && !buttons->isButtonPressed(buttonPressed) && !buttons->isButtonPressedLong(buttonPressed, 2000))
+        if (buttonPressed != -1 && !buttons->isButtonPressed(buttonPressed) && !buttons->isButtonPressedLong(buttonPressed, 2000))
         {
             chosenButton = buttonPressed + 1;
             buttonReleased = true;
-            buttonPressed = NULL;
+            buttonPressed = -1;
         }
         std::cerr << chosenButton << std::endl;
 
