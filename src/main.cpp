@@ -43,6 +43,7 @@ std::vector<char> array2 = {
     static_cast<char>(0x56)  // 01010110
 };
 
+std::mutex timerMutex;
 std::mutex deviceMutex;
 
 bool isVowel(char c)
@@ -78,6 +79,30 @@ char intToHexChar(int value)
     }
 
     return hexChars;
+}
+
+void setTimer(int *timer, int value)
+{
+    {
+        std::lock_guard<std::mutex> lock(timerMutex);
+        *timer = value;
+    }
+}
+
+void subtractTimer(int *timer, int value)
+{
+    {
+        std::lock_guard<std::mutex> lock(timerMutex);
+        *timer -= value;
+    }
+}
+
+void addTimer(int *timer, int value)
+{
+    {
+        std::lock_guard<std::mutex> lock(timerMutex);
+        *timer += value;
+    }
 }
 
 void buttons_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
@@ -254,7 +279,7 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
             }
             else
             {
-                *timer -= 15;
+                subtractTimer(timer, 15);
             }
         }
         {
@@ -299,8 +324,9 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
     while (!deactivated && *timer > 0)
     {
         currTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+        
+        setTimer(timer, initialTimer - (currTime - startTime) / 1000);
 
-        *timer = initialTimer - (currTime - startTime)/1000;
         int dig0 = *timer % 10;
         int dig1 = (*timer % 60) / 10;
         int dig2 = *timer / 60;
