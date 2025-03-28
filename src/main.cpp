@@ -323,7 +323,7 @@ unsigned int vectorToBinary(const std::vector<int> &positions)
 int getCorrectGreenCombination(std::vector<int> blinkPeriods)
 {
     std::vector<int> chosenNumbers(blinkPeriods.size());
-
+    std::cout << "7seg: ";
     for (unsigned int i = 0; i < blinkPeriods.size(); ++i)
     {
         int period = (blinkPeriods[i] / 1000) - 1;
@@ -625,7 +625,7 @@ void lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *green
     std::uniform_int_distribution<> dist(0, 7);
 
     int order = dist(gen);
-    std::cout << order << std::endl;
+    std::cout << "lcd: " << order << std::endl;
     std::vector<int> shownCombination;
 
     for (unsigned int i = 0; i < 10; ++i)
@@ -633,9 +633,10 @@ void lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *green
         if (i != (((order - 1) % 10 + 10) % 10) && i != ((order + 5) % 10))
         {
             shownCombination.push_back(i);
-            std::cout << i << std::endl;
+            std::cout << i;
         }
     }
+    std::cout << std::endl;
 
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::default_random_engine rng(seed);
@@ -765,6 +766,9 @@ int main()
         }
     }
 
+    redLeds.update();
+    greenLeds.update();
+    sevenSegment.update();
     lcd.update();
 
     if (fileDescriptor != -1)
