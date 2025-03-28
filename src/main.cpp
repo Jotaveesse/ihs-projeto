@@ -693,67 +693,67 @@ void lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *green
             {
                 lcd->sendWrite(deactiveSymbol);
             }
-        ]
+        }
 
         lcd->update();
-        }
+    }
+}
+
+int main()
+{
+    int fileDescriptor = -1;
+
+    fileDescriptor = open("/dev/mydev", O_RDWR);
+    if (fileDescriptor < 0)
+    {
+        std::cerr << "Failed to open device: " << strerror(errno) << std::endl;
+        unsigned int number;
+        std::cin >> number;
+        return 1;
     }
 
-    int main()
-    {
-        int fileDescriptor = -1;
+    Leds redLeds(fileDescriptor, WR_RED_LEDS, 18);
+    Leds greenLeds(fileDescriptor, WR_GREEN_LEDS, 8);
+    Switches switches(fileDescriptor, RD_SWITCHES, 18);
+    Buttons buttons(fileDescriptor, RD_PBUTTONS, 4);
+    SevenSegmentDisplays sevenSegment(fileDescriptor, WR_L_DISPLAY, WR_R_DISPLAY, 8);
+    LCD lcd(fileDescriptor, WR_LCD_DISPLAY);
+    lcd.init();
 
-        fileDescriptor = open("/dev/mydev", O_RDWR);
-        if (fileDescriptor < 0)
-        {
-            std::cerr << "Failed to open device: " << strerror(errno) << std::endl;
-            unsigned int number;
-            std::cin >> number;
-            return 1;
-        }
-
-        Leds redLeds(fileDescriptor, WR_RED_LEDS, 18);
-        Leds greenLeds(fileDescriptor, WR_GREEN_LEDS, 8);
-        Switches switches(fileDescriptor, RD_SWITCHES, 18);
-        Buttons buttons(fileDescriptor, RD_PBUTTONS, 4);
-        SevenSegmentDisplays sevenSegment(fileDescriptor, WR_L_DISPLAY, WR_R_DISPLAY, 8);
-        LCD lcd(fileDescriptor, WR_LCD_DISPLAY);
-        lcd.init();
-
-        int timer = 240 * 1000000;
+    int timer = 240 * 1000000;
 
 #pragma omp parallel sections num_threads(6) shared(timer)
+    {
+#pragma omp section
         {
-#pragma omp section
-            {
-                buttons_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
-            }
-#pragma omp section
-            {
-                switches_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
-            }
-#pragma omp section
-            {
-                red_leds_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
-            }
-#pragma omp section
-            {
-                green_leds_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
-            }
-#pragma omp section
-            {
-                seven_segment_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
-            }
-#pragma omp section
-            {
-                lcd_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
-            }
+            buttons_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
         }
-
-        if (fileDescriptor != -1)
+#pragma omp section
         {
-            close(fileDescriptor);
+            switches_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
         }
-
-        return 0;
+#pragma omp section
+        {
+            red_leds_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+        }
+#pragma omp section
+        {
+            green_leds_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+        }
+#pragma omp section
+        {
+            seven_segment_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+        }
+#pragma omp section
+        {
+            lcd_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+        }
     }
+
+    if (fileDescriptor != -1)
+    {
+        close(fileDescriptor);
+    }
+
+    return 0;
+}
