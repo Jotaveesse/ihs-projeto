@@ -551,12 +551,13 @@ int main()
     if (fileDescriptor < 0)
     {
         std::cerr << "Failed to open device: " << strerror(errno) << std::endl;
+        unsigned int number;
+        std::cout << "Enter the button states as a number: ";
+        std::cin >> number;
         return 1;
     }
 
-    unsigned int number;
-    std::cout << "Enter the button states as a number: ";
-    std::cin >> number;
+    
 
     Leds redLeds(fileDescriptor, WR_RED_LEDS, 18);
     Leds greenLeds(fileDescriptor, WR_GREEN_LEDS, 9);
