@@ -16,7 +16,7 @@
 #include <random>
 #include <algorithm>
 
-char deactiveSymbol = static_cast<char>(0xFF);
+char defeatSymbol = static_cast<char>(0xFF);
 
 std::vector<char> array1 = {
     static_cast<char>(0xC0), // 11000000
@@ -290,7 +290,7 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
 
     {
         std::lock_guard<std::mutex> lock(deviceMutex);
-        redLeds->setAllStates(*timer >= 0);
+        redLeds->setAllStates(*timer <= 0);
         redLeds->update();
     }
 }
@@ -409,7 +409,7 @@ void green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds
 
     {
         std::lock_guard<std::mutex> lock(deviceMutex);
-        greenLeds->setAllStates(*timer >= 0);
+        greenLeds->setAllStates(*timer <= 0);
         greenLeds->update();
     }
 }
@@ -611,7 +611,7 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
     }
     {
         std::lock_guard<std::mutex> lock(deviceMutex);
-        sevenSegment->setAllStates(*timer >= 0);
+        sevenSegment->setAllStates(*timer <= 0);
         sevenSegment->update();
     }
 }
@@ -639,6 +639,11 @@ void lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *green
             std::cout << i << std::endl;
         }
     }
+
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::default_random_engine rng(seed);
+
+    std::shuffle(shownCombination.begin(), shownCombination.end(), rng);
 
     {
         std::lock_guard<std::mutex> lock(deviceMutex);
@@ -687,11 +692,11 @@ void lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *green
         std::lock_guard<std::mutex> lock(deviceMutex);
         lcd->clear();
 
-        if (*timer > 0)
+        if (*timer < 0)
         {
             for (unsigned int i = 0; i < 16; i++)
             {
-                lcd->sendWrite(deactiveSymbol);
+                lcd->sendWrite(defeatSymbol);
             }
         }
 
@@ -749,6 +754,21 @@ int main()
             lcd_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
         }
     }
+
+    redLeds.setAllStates(timer <= 0);
+    greenLeds.setAllStates(timer <= 0);
+    sevenSegment.setAllStates(timer <= 0);
+    lcd->clear();
+
+        if (*timer < 0)
+        {
+            for (unsigned int i = 0; i < 16; i++)
+            {
+                lcd->sendWrite(defeatSymbol);
+            }
+        }
+
+        lcd->update();
 
     if (fileDescriptor != -1)
     {

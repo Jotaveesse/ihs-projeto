@@ -49,7 +49,7 @@ void LCD::init() {
     delayMicroseconds(100);
 
     // Display control (Display on, cursor off, blink off)
-    sendInstruction(LCD_DISPLAY_CONTROL | LCD_DISPLAY_ON | LCD_CURSOR_ON | LCD_BLINK_ON);
+    sendInstruction(LCD_DISPLAY_CONTROL | LCD_DISPLAY_ON | LCD_CURSOR_OFF | LCD_BLINK_OFF);
     delayMicroseconds(100);
 
     // Entry mode set (Increment, no shift)
