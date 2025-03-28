@@ -174,8 +174,8 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
     while (!deactivated && *timer > 0)
     {
 
-        std::cout << "ehyyy";
         buttonStates = buttons->getStatesAsNumber();
+        std::cout << buttonStates;
         switchesStates = switches->getStatesAsNumber();
 
         int idHigher = sevenSegment->getNumberFromDisplay(5);
