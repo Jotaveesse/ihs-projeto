@@ -593,5 +593,9 @@ int main()
         close(fileDescriptor);
     }
 
+    unsigned int number;
+    std::cout << "Enter the button states as a number: ";
+    std::cin >> number;
+
     return 0;
 }
