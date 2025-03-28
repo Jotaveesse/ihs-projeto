@@ -304,6 +304,10 @@ int getCorrectGreenCombination(std::vector<int> blinkPeriods)
 {
     std::vector<int> chosenNumbers(blinkPeriods.size());
 
+    for (unsigned int i = 0; i < blinkPeriods.size(); ++i){
+        std::cout << blinkPeriods[i] << std::endl;
+    }
+
     for (unsigned int i = 0; i < blinkPeriods.size(); ++i)
     {
         int period = blinkPeriods[i];
