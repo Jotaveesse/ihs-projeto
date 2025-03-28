@@ -324,11 +324,10 @@ void green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds
             heldButton = true;
         }
 
-        for (unsigned int i = 0; i < greenLeds->getCount()-1; ++i)
+        for (unsigned int i = 0; i < greenLeds->getCount(); ++i)
         {
             greenLeds->blink(i, blinkPeriods[i]);
         }
-        greenLeds->blink(7, 500);
 
         // confirmação da escolha
         if (heldButton && !buttons->isButtonPressed(2))
@@ -409,7 +408,7 @@ void green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds
         }
         {
             std::lock_guard<std::mutex> lock(deviceMutex);
-            redLeds->update();
+            greenLeds->update();
         }
     }
 
