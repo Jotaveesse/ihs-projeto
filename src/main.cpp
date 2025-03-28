@@ -635,6 +635,7 @@ void lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *green
         {
             shownCombination[shownCombination.size()] = i;
             std::cout << i << std::endl;
+            std::cout << shownCombination.size() << std::endl;
         }
     }
 
