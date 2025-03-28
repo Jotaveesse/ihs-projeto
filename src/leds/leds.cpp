@@ -32,7 +32,7 @@ int Leds::update()
     return 0;
 }
 
-void blink(unsigned int led, unsigned int offTimeMs)
+void Leds::blink(unsigned int led, unsigned int offTimeMs)
 {
     if (led >= count)
     {
