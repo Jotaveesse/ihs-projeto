@@ -710,80 +710,111 @@ void lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *green
     }
 }
 
-int main()
+int main(int argc, char *argv[])
 {
-    int fileDescriptor = -1;
+    bool restart = true;
+    int initialTimerValue = 240; // Default timer value
 
-    fileDescriptor = open("/dev/mydev", O_RDWR);
-    if (fileDescriptor < 0)
+    if (argc > 1)
     {
-        std::cerr << "Failed to open device: " << strerror(errno) << std::endl;
-        unsigned int number;
-        std::cin >> number;
-        return 1;
+        try
+        {
+            initialTimerValue = std::stoi(argv[1]);
+        }
+        catch (const std::invalid_argument &e)
+        {
+            std::cerr << "Invalid timer argument. Using default: 240 seconds." << std::endl;
+        }
+        catch (const std::out_of_range &e)
+        {
+            std::cerr << "Timer argument out of range. Using default: 240 seconds." << std::endl;
+        }
     }
 
-    Leds redLeds(fileDescriptor, WR_RED_LEDS, 18);
-    Leds greenLeds(fileDescriptor, WR_GREEN_LEDS, 8);
-    Switches switches(fileDescriptor, RD_SWITCHES, 18);
-    Buttons buttons(fileDescriptor, RD_PBUTTONS, 4);
-    SevenSegmentDisplays sevenSegment(fileDescriptor, WR_L_DISPLAY, WR_R_DISPLAY, 8);
-    LCD lcd(fileDescriptor, WR_LCD_DISPLAY);
-    lcd.init();
+    while (restart)
+    {
+        int fileDescriptor = -1;
 
-    int timer = 240 * 1000000;
+        fileDescriptor = open("/dev/mydev", O_RDWR);
+        if (fileDescriptor < 0)
+        {
+            std::cerr << "Failed to open device: " << strerror(errno) << std::endl;
+            unsigned int number;
+            std::cin >> number;
+            return 1;
+        }
+
+        Leds redLeds(fileDescriptor, WR_RED_LEDS, 18);
+        Leds greenLeds(fileDescriptor, WR_GREEN_LEDS, 8);
+        Switches switches(fileDescriptor, RD_SWITCHES, 18);
+        Buttons buttons(fileDescriptor, RD_PBUTTONS, 4);
+        SevenSegmentDisplays sevenSegment(fileDescriptor, WR_L_DISPLAY, WR_R_DISPLAY, 8);
+        LCD lcd(fileDescriptor, WR_LCD_DISPLAY);
+        lcd.init();
+
+        int timer = initialTimerValue * 1000000; // Timer in microseconds
 
 #pragma omp parallel sections num_threads(6) shared(timer)
-    {
+        {
 #pragma omp section
-        {
-            buttons_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
-        }
-#pragma omp section
-        {
-            switches_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
-        }
-#pragma omp section
-        {
-            red_leds_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
-        }
-#pragma omp section
-        {
-            green_leds_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
-        }
-#pragma omp section
-        {
-            seven_segment_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
-        }
-#pragma omp section
-        {
-            lcd_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
-        }
-    }
-
-    {
-        std::lock_guard<std::mutex> lock(deviceMutex);
-        redLeds.setAllStates(timer <= 0);
-        greenLeds.setAllStates(timer <= 0);
-        sevenSegment.setAllStates(timer >= 0);
-        lcd.clear();
-
-        if (timer <= 0)
-        {
-            for (unsigned int i = 0; i < 16; i++)
             {
-                lcd.sendWrite(defeatSymbol);
+                buttons_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+            }
+#pragma omp section
+            {
+                switches_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+            }
+#pragma omp section
+            {
+                red_leds_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+            }
+#pragma omp section
+            {
+                green_leds_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+            }
+#pragma omp section
+            {
+                seven_segment_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+            }
+#pragma omp section
+            {
+                lcd_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
             }
         }
 
-        redLeds.update();
-        greenLeds.update();
-        sevenSegment.update();
-        lcd.update();
-
-        if (fileDescriptor != -1)
         {
-            close(fileDescriptor);
+            std::lock_guard<std::mutex> lock(deviceMutex);
+            redLeds.setAllStates(timer <= 0);
+            greenLeds.setAllStates(timer <= 0);
+            sevenSegment.setAllStates(timer >= 0);
+            lcd.clear();
+
+            if (timer <= 0)
+            {
+                for (unsigned int i = 0; i < 16; i++)
+                {
+                    lcd.sendWrite(defeatSymbol);
+                }
+            }
+
+            redLeds.update();
+            greenLeds.update();
+            sevenSegment.update();
+            lcd.update();
+
+            if (fileDescriptor != -1)
+            {
+                close(fileDescriptor);
+            }
+        }
+
+        std::cout << "Do you want to restart? (y/n): ";
+        char choice;
+        std::cin >> choice;
+
+        if (choice != 'y' && choice != 'Y')
+        {
+            restart = false;
         }
     }
 
