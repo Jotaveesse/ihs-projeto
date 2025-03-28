@@ -299,6 +299,8 @@ void green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds
     unsigned int buttonStates = 0;
     unsigned int switchesStates = 0;
     bool heldButton = false;
+    bool deactivated = false;
+
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -324,7 +326,7 @@ void green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds
 
         for (unsigned int i = 0; i < greenLeds->getCount(); ++i)
         {
-            greenLeds->blink(i, blinkPeriods[i])
+            greenLeds->blink(i, blinkPeriods[i]);
         }
 
         // confirmação da escolha
