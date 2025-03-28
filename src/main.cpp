@@ -626,7 +626,7 @@ void lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *green
     std::uniform_int_distribution<> dist(0, 7);
 
     int order = dist(gen);
-
+    std::cout << order << std::endl;
     std::vector<int> shownCombination;
 
     for (unsigned int i = 0; i < 10; ++i)
