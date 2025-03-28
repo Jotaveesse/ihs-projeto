@@ -311,7 +311,7 @@ void green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds
     for (unsigned int i = 0; i < greenLeds->getCount(); ++i)
     {
         int period = dist(gen);
-        blinkPeriods[i] = period;
+        blinkPeriods[i] = period * 1000;
     }
 
     while (!deactivated && *timer > 0)
@@ -319,7 +319,7 @@ void green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds
         buttonStates = buttons->getStatesAsNumber();
         switchesStates = switches->getStatesAsNumber();
 
-        if (buttons->isButtonPressedLong(3, 2000))
+        if (buttons->isButtonPressedLong(2, 2000))
         {
             heldButton = true;
         }
