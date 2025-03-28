@@ -318,7 +318,6 @@ int getCorrectGreenCombination(std::vector<int> blinkPeriods)
         {
             chosenNum = greenOrder[period][j];
             alreadyChosen = count(chosenNumbers.begin(), chosenNumbers.end(), chosenNum) > 0;
-            std::cout << alreadyChosen << std::endl;
         }
 
         std::cout << chosenNum << std::endl;
