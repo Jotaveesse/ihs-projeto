@@ -689,7 +689,7 @@ void lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *green
         std::lock_guard<std::mutex> lock(deviceMutex);
         lcd->clear();
 
-        if (*timer < 0)
+        if (*timer <= 0)
         {
             for (unsigned int i = 0; i < 16; i++)
             {
@@ -757,7 +757,7 @@ int main()
     sevenSegment.setAllStates(timer <= 0);
     lcd.clear();
 
-    if (*timer < 0)
+    if (timer <= 0)
     {
         for (unsigned int i = 0; i < 16; i++)
         {
