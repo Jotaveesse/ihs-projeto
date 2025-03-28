@@ -315,7 +315,7 @@ unsigned int vectorToBinary(const std::vector<int> &positions)
 
     for (int position : positions)
     {
-        if (position >= 1 && position <= 18)
+        if (position >= 0 && position <= 17)
         {
             binaryNumber |= (1ULL << (position)); // Set the bit at the given position
         }
