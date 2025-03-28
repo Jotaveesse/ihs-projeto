@@ -199,7 +199,7 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
                 redLeds->setState(i, true);
                 break;
             case 2: // Blink
-                redLeds->blink(i, 500);
+                redLeds->blink(i, 1000);
                 break;
             }
         }
@@ -294,6 +294,35 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
     }
 }
 
+std::vector<std::vector<int>> greenOrder = {
+    {18, 5, 12, 2, 15, 8, 1, 11, 17, 6, 10, 3, 16, 9, 14, 4, 13, 7},
+    {12, 5, 18, 1, 9, 14, 6, 17, 3, 15, 8, 2, 11, 4, 13, 7, 16, 10},
+    {5, 12, 18, 15, 7, 4, 11, 8, 13, 2, 16, 10, 1, 17, 3, 9, 14, 6},
+    {18, 1, 12, 5, 9, 14, 7, 13, 4, 11, 8, 16, 2, 17, 6, 10, 15, 3}};
+
+int getCorrectGreenCombination(std::vector<int> blinkPeriods)
+{
+    std::vector<int> chosenNumbers(blinkPeriods.size());
+
+    for (unsigned int i = 0; i < blinkPeriods.size(); ++i)
+    {
+        int period = blinkPeriods[i];
+        int chosenNum = -1;
+        bool alreadyChosen = true;
+
+        for (unsigned int j = 0; alreadyChosen; ++j)
+        {
+            chosenNum = greenOrder[period][j];
+            alreadyChosen = count(greenOrder[period].begin(), greenOrder[period].end(), chosenNum) > 0;
+        }
+
+        std::cout << chosenNum << std::endl;
+        chosenNumbers[i] = chosenNum;
+    }
+
+    return 0;
+}
+
 void green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
 {
     unsigned int buttonStates = 0;
@@ -301,10 +330,9 @@ void green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds
     bool heldButton = false;
     bool deactivated = false;
 
-
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dist(1, 5);
+    std::uniform_int_distribution<> dist(1, 4);
 
     std::vector<int> blinkPeriods(greenLeds->getCount());
 
@@ -313,6 +341,8 @@ void green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds
         int period = dist(gen);
         blinkPeriods[i] = period * 1000;
     }
+
+    getCorrectGreenCombination(blinkPeriods);
 
     while (!deactivated && *timer > 0)
     {
@@ -658,8 +688,6 @@ int main()
         std::cin >> number;
         return 1;
     }
-
-    
 
     Leds redLeds(fileDescriptor, WR_RED_LEDS, 18);
     Leds greenLeds(fileDescriptor, WR_GREEN_LEDS, 8);
