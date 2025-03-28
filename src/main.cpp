@@ -16,18 +16,17 @@
 #include <random>
 #include <algorithm>
 
-std::vector<char>
-    array1 = {
-        static_cast<char>(0xC0), // 11000000
-        static_cast<char>(0xD0), // 11010000
-        static_cast<char>(0xAE), // 10101110
-        static_cast<char>(0xD3), // 11010011
-        static_cast<char>(0xB7), // 10110111
-        static_cast<char>(0xFC), // 11111100
-        static_cast<char>(0xC2), // 11000010
-        static_cast<char>(0xD6), // 11010110
-        static_cast<char>(0xD1), // 11010001
-        static_cast<char>(0xD5)  // 11010101
+std::vector<char> array1 = {
+    static_cast<char>(0xC0), // 11000000
+    static_cast<char>(0xD0), // 11010000
+    static_cast<char>(0xAE), // 10101110
+    static_cast<char>(0xD3), // 11010011
+    static_cast<char>(0xB7), // 10110111
+    static_cast<char>(0xFC), // 11111100
+    static_cast<char>(0xC2), // 11000010
+    static_cast<char>(0xD6), // 11010110
+    static_cast<char>(0xD1), // 11010001
+    static_cast<char>(0xD5)  // 11010101
 };
 
 std::vector<char> array2 = {
@@ -298,16 +297,20 @@ std::vector<std::vector<int>> greenOrder = {
     {17, 4, 11, 1, 14, 7, 0, 10, 16, 5, 9, 2, 15, 8, 13, 3, 12, 6},
     {11, 2, 17, 0, 8, 13, 5, 16, 4, 14, 7, 1, 10, 3, 12, 6, 15, 9},
     {4, 11, 13, 14, 6, 3, 10, 7, 12, 1, 15, 9, 0, 16, 2, 8, 17, 5},
-    {17, 0, 3, 4, 8, 13, 6, 12, 11, 10, 7, 15, 1, 16, 5, 9, 14, 2}
-};
+    {17, 0, 3, 4, 8, 13, 6, 12, 11, 10, 7, 15, 1, 16, 5, 9, 14, 2}};
 
-unsigned int vectorToBinary(const std::vector<int>& positions) {
+unsigned int vectorToBinary(const std::vector<int> &positions)
+{
     unsigned int binaryNumber = 0;
 
-    for (int position : positions) {
-        if (position >= 1 && position <= 18) {
+    for (int position : positions)
+    {
+        if (position >= 1 && position <= 18)
+        {
             binaryNumber |= (1ULL << (position)); // Set the bit at the given position
-        } else {
+        }
+        else
+        {
             std::cerr << "Warning: Invalid position " << position << ". Ignoring." << std::endl;
         }
     }
@@ -319,7 +322,8 @@ int getCorrectGreenCombination(std::vector<int> blinkPeriods)
 {
     std::vector<int> chosenNumbers(blinkPeriods.size());
 
-    for (unsigned int i = 0; i < blinkPeriods.size(); ++i){
+    for (unsigned int i = 0; i < blinkPeriods.size(); ++i)
+    {
         std::cout << blinkPeriods[i] << std::endl;
     }
 
@@ -612,26 +616,76 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
 
 void lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
 {
-    unsigned int switchesStates = 0;
     unsigned int buttonStates = 0;
+    unsigned int switchesStates = 0;
+    bool heldButton = false;
+    bool deactivated = false;
 
-    while (buttonStates != 15)
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dist(0, 7);
+
+    int order = dist(gen);
+
+    std::vector<int> shownCombination(8);
+
+    for (unsigned int i = 0; i < 10; ++i)
+    {
+        if (i != (((order - 1) % 10 + 10) % 10) && i != ((order + 5) % 10))
+        {
+            shownCombination[shownCombination.size()] = i;
+            std::cout << i << std::endl;
+        }
+    }
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    {
+        std::lock_guard<std::mutex> lock(deviceMutex);
+        lcd->clear();
+        for (unsigned int i = 0; i < 8; i++)
+        {
+            lcd->sendWrite(array1[shownCombination[i]]);
+            lcd->sendWrite(" ");
+        }
+
+        lcd->update();
+    }
+
+    while (!deactivated && *timer > 0)
     {
         buttonStates = buttons->getStatesAsNumber();
         switchesStates = switches->getStatesAsNumber();
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        if (buttons->isButtonPressedLong(1, 2000))
+        {
+            heldButton = true;
+        }
+
+        // confirmação da escolha
+        if (heldButton && !buttons->isButtonPressed(1))
+        {
+            heldButton = false;
+            bool correctCombination = switches->getStatesAsNumber() == (1 << order);
+
+            if (correctCombination)
+            {
+                deactivated = true;
+            }
+            else
+            {
+                subtractTimer(timer, 15000000);
+            }
+        }
         {
             std::lock_guard<std::mutex> lock(deviceMutex);
-            lcd->clear();
-            for (unsigned int i = 0; i < 10; i++)
-            {
-                lcd->sendWrite(array1[i]);
-                lcd->sendWrite(" ");
-            }
-
             lcd->update();
         }
+    }
+
+    {
+        std::lock_guard<std::mutex> lock(deviceMutex);
+        lcd->setAllStates(*timer >= 0);
+        lcd->update();
     }
 }
 
