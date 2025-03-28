@@ -554,6 +554,10 @@ int main()
         return 1;
     }
 
+    unsigned int number;
+    std::cout << "Enter the button states as a number: ";
+    std::cin >> number;
+
     Leds redLeds(fileDescriptor, WR_RED_LEDS, 18);
     Leds greenLeds(fileDescriptor, WR_GREEN_LEDS, 9);
     Switches switches(fileDescriptor, RD_SWITCHES, 18);
@@ -596,10 +600,6 @@ int main()
     {
         close(fileDescriptor);
     }
-
-    unsigned int number;
-    std::cout << "Enter the button states as a number: ";
-    std::cin >> number;
 
     return 0;
 }
