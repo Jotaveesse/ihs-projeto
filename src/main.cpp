@@ -110,7 +110,7 @@ void buttons_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *g
 {
     unsigned int buttonStates = 0;
 
-    while (buttonStates != 15)
+    while (*timer > 0)
     {
         buttonStates = buttons->getStatesAsNumber();
 
@@ -125,7 +125,7 @@ void switches_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
 {
     unsigned int buttonStates = 0;
 
-    while (buttonStates != 15)
+    while (*timer > 0)
     {
         buttonStates = buttons->getStatesAsNumber();
 
