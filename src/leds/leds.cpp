@@ -43,7 +43,7 @@ void blink(unsigned int led, unsigned int offTimeMs)
     auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - startTime).count();
 
     // Calculate the total cycle time (on time + off time)
-    unsigned int cycleTime = 200 + offTimeMs;
+    unsigned int cycleTime = offTimeMs;
 
     // Calculate the current position within the cycle
     unsigned int cyclePosition = elapsed % cycleTime;
