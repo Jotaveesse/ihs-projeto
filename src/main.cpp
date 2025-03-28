@@ -300,6 +300,20 @@ std::vector<std::vector<int>> greenOrder = {
     {5, 12, 18, 15, 7, 4, 11, 8, 13, 2, 16, 10, 1, 17, 3, 9, 14, 6},
     {18, 1, 12, 5, 9, 14, 7, 13, 4, 11, 8, 16, 2, 17, 6, 10, 15, 3}};
 
+unsigned int vectorToBinary(const std::vector<int>& positions) {
+    unsigned int binaryNumber = 0;
+
+    for (int position : positions) {
+        if (position >= 1 && position <= 18) {
+            binaryNumber |= (1ULL << (position - 1)); // Set the bit at the given position
+        } else {
+            std::cerr << "Warning: Invalid position " << position << ". Ignoring." << std::endl;
+        }
+    }
+
+    return binaryNumber;
+}
+
 int getCorrectGreenCombination(std::vector<int> blinkPeriods)
 {
     std::vector<int> chosenNumbers(blinkPeriods.size());
@@ -324,7 +338,7 @@ int getCorrectGreenCombination(std::vector<int> blinkPeriods)
         chosenNumbers[i] = chosenNum;
     }
 
-    return 0;
+    return vectorToBinary(chosenNumbers);
 }
 
 void green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
@@ -346,7 +360,9 @@ void green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds
         blinkPeriods[i] = period * 1000;
     }
 
-    getCorrectGreenCombination(blinkPeriods);
+    int combination = getCorrectGreenCombination(blinkPeriods);
+
+    std::cout << combination << std::endl;
 
     while (!deactivated && *timer > 0)
     {
@@ -367,69 +383,7 @@ void green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds
         if (heldButton && !buttons->isButtonPressed(2))
         {
             heldButton = false;
-            bool correctCombination = false;
-
-            // switch (ledModes[redLeds->getCount() - 1])
-            // {
-            // case 1: // On
-            //     if (blinkCount == offCount)
-            //     {
-            //         correctCombination = switchesStates == 0b000000000000000111;
-            //     }
-            //     else if (offCount > blinkCount)
-            //     {
-            //         correctCombination = switchesStates == 0b000000000000001111;
-            //     }
-            //     else if (offCount > 5 && std::any_of(id.begin(), id.end(), isVowel))
-            //     {
-            //         correctCombination = switchesStates == 0b111000000000000000;
-            //     }
-            //     else if (onCount > 6)
-            //     {
-            //         correctCombination = switchesStates == 0b000000000000111111;
-            //     }
-            //     else
-            //     {
-            //         correctCombination = switchesStates == 0b111000000000000111;
-            //     }
-            //     break;
-            // case 2: // Blink
-            //     if (onCount > blinkCount && std::any_of(id.begin(), id.end(), isEvenDigit))
-            //     {
-            //         correctCombination = switchesStates == 0b000000111110000000;
-            //     }
-            //     else if (onCount < 7)
-            //     {
-            //         correctCombination = switchesStates == 0b111000000000000001;
-            //     }
-            //     else if (offCount == onCount)
-            //     {
-            //         correctCombination = switchesStates == 0b111110000000000111;
-            //     }
-            //     else if (blinkCount > offCount)
-            //     {
-            //         correctCombination = switchesStates == 0b000000111110000000;
-            //     }
-            //     break;
-            // case 0: // Off
-            //     if (blinkCount < 5)
-            //     {
-            //         correctCombination = switchesStates == 0b111110000000000001;
-            //     }
-            //     else if (blinkCount > offCount && containsLetter(id))
-            //     {
-            //         correctCombination = switchesStates == 0b111100000000000000;
-            //     }
-            //     else if (onCount > blinkCount)
-            //     {
-            //         correctCombination = switchesStates == 0b000000111111111100;
-            //     }
-            //     else if (blinkCount == offCount)
-            //     {
-            //         correctCombination = switchesStates == 0b000000000000000000;
-            //     }
-            //     break;
-            // }
+            bool correctCombination = switches->getStatesAsNumber() == combination;
 
             if (correctCombination)
             {
