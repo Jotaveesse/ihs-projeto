@@ -326,11 +326,6 @@ int getCorrectGreenCombination(std::vector<int> blinkPeriods)
 
     for (unsigned int i = 0; i < blinkPeriods.size(); ++i)
     {
-        // std::cout << blinkPeriods[i] << std::endl;
-    }
-
-    for (unsigned int i = 0; i < blinkPeriods.size(); ++i)
-    {
         int period = (blinkPeriods[i] / 1000) - 1;
         int chosenNum = -1;
         bool alreadyChosen = true;
@@ -341,9 +336,11 @@ int getCorrectGreenCombination(std::vector<int> blinkPeriods)
             alreadyChosen = count(chosenNumbers.begin(), chosenNumbers.end(), chosenNum) > 0;
         }
 
-        // std::cout << chosenNum << std::endl;
+        std::cout << chosenNum << " ";
         chosenNumbers[i] = chosenNum;
     }
+
+    std::cout << std::endl;
 
     return vectorToBinary(chosenNumbers);
 }
@@ -758,17 +755,17 @@ int main()
     redLeds.setAllStates(timer <= 0);
     greenLeds.setAllStates(timer <= 0);
     sevenSegment.setAllStates(timer <= 0);
-    lcd->clear();
+    lcd.clear();
 
-        if (*timer < 0)
+    if (*timer < 0)
+    {
+        for (unsigned int i = 0; i < 16; i++)
         {
-            for (unsigned int i = 0; i < 16; i++)
-            {
-                lcd->sendWrite(defeatSymbol);
-            }
+            lcd.sendWrite(defeatSymbol);
         }
+    }
 
-        lcd->update();
+    lcd.update();
 
     if (fileDescriptor != -1)
     {
