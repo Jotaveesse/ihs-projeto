@@ -543,9 +543,9 @@ int main()
 {
     int fileDescriptor = -1;
 
-    unsigned int number;
+    unsigned int number2;
     std::cout << "Enter the button states as a number: ";
-    std::cin >> number;
+    std::cin >> number2;
 
     fileDescriptor = open("/dev/mydev", O_RDWR);
     if (fileDescriptor < 0)
