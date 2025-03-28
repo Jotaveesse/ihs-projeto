@@ -330,7 +330,7 @@ unsigned int vectorToBinary(const std::vector<int> &positions)
 
 int getCorrectGreenCombination(std::vector<int> blinkPeriods)
 {
-    std::vector<int> chosenNumbers(blinkPeriods.size());
+    std::vector<int> chosenNumbers(blinkPeriods.size(), -1);
     std::cout << "7seg: ";
     for (unsigned int i = 0; i < blinkPeriods.size(); ++i)
     {
@@ -710,34 +710,25 @@ void lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *green
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main() {
     bool restart = true;
     int initialTimerValue = 240; // Default timer value
 
-    if (argc > 1)
-    {
-        try
-        {
-            initialTimerValue = std::stoi(argv[1]);
-        }
-        catch (const std::invalid_argument &e)
-        {
-            std::cerr << "Invalid timer argument. Using default: 240 seconds." << std::endl;
-        }
-        catch (const std::out_of_range &e)
-        {
-            std::cerr << "Timer argument out of range. Using default: 240 seconds." << std::endl;
-        }
+    std::cout << "Enter the timer value in seconds: ";
+    std::cin >> initialTimerValue;
+
+    if (std::cin.fail()) {
+        std::cerr << "Invalid input. Using default timer: 240 seconds." << std::endl;
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        initialTimerValue = 240;
     }
 
-    while (restart)
-    {
+    while (restart) {
         int fileDescriptor = -1;
 
         fileDescriptor = open("/dev/mydev", O_RDWR);
-        if (fileDescriptor < 0)
-        {
+        if (fileDescriptor < 0) {
             std::cerr << "Failed to open device: " << strerror(errno) << std::endl;
             unsigned int number;
             std::cin >> number;
@@ -789,10 +780,8 @@ int main(int argc, char *argv[])
             sevenSegment.setAllStates(timer >= 0);
             lcd.clear();
 
-            if (timer <= 0)
-            {
-                for (unsigned int i = 0; i < 16; i++)
-                {
+            if (timer <= 0) {
+                for (unsigned int i = 0; i < 16; i++) {
                     lcd.sendWrite(defeatSymbol);
                 }
             }
@@ -802,8 +791,7 @@ int main(int argc, char *argv[])
             sevenSegment.update();
             lcd.update();
 
-            if (fileDescriptor != -1)
-            {
+            if (fileDescriptor != -1) {
                 close(fileDescriptor);
             }
         }
@@ -812,8 +800,7 @@ int main(int argc, char *argv[])
         char choice;
         std::cin >> choice;
 
-        if (choice != 'y' && choice != 'Y')
-        {
+        if (choice != 'y' && choice != 'Y') {
             restart = false;
         }
     }
