@@ -46,7 +46,7 @@ static struct class* my_class;
 static struct cdev my_device;
 
 #define DRIVER_NAME 	"my_driver"
-#define FILE_NAME 	"jvs"
+#define FILE_NAME 	"mydev"
 #define DRIVER_CLASS 	"MyModuleClass"
 
 /* fake device */

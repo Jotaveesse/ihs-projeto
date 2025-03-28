@@ -19,7 +19,7 @@ MODULE_DESCRIPTION("simple pci driver for DE2i-150 dev board");
 /* driver constants */
 
 #define DRIVER_NAME      "my_driver"
-#define FILE_NAME        "jvs"
+#define FILE_NAME        "mydev"
 #define DRIVER_CLASS     "MyModuleClass"
 #define MY_PCI_VENDOR_ID  0x1172
 #define MY_PCI_DEVICE_ID  0x0004

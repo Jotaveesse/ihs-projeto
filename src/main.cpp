@@ -547,7 +547,7 @@ int main()
     std::cout << "Enter the button states as a number: ";
     std::cin >> number2;
 
-    fileDescriptor = open("/dev/jvs", O_RDWR);
+    fileDescriptor = open("/dev/mydev", O_RDWR);
     if (fileDescriptor < 0)
     {
         std::cerr << "Failed to open device: " << strerror(errno) << std::endl;

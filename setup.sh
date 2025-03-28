@@ -16,7 +16,7 @@ sudo insmod de2i-150.ko
 cd ../..
 
 echo -e "$GREEN CHANGING DEVICE NODE PERMISSIONS $CLEAR"
-sudo chmod 666 /dev/jvs
+sudo chmod 666 /dev/mydev
 
 echo -e "$GREEN DONE! $CLEAR"
 echo ""
