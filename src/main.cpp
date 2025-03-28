@@ -174,6 +174,7 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
     while (!deactivated && *timer > 0)
     {
 
+        std::cout << "ehyyy";
         buttonStates = buttons->getStatesAsNumber();
         switchesStates = switches->getStatesAsNumber();
 
@@ -543,16 +544,11 @@ int main()
 {
     int fileDescriptor = -1;
 
-    unsigned int number2;
-    std::cout << "Enter the button states as a number: ";
-    std::cin >> number2;
-
     fileDescriptor = open("/dev/mydev", O_RDWR);
     if (fileDescriptor < 0)
     {
         std::cerr << "Failed to open device: " << strerror(errno) << std::endl;
         unsigned int number;
-        std::cout << "Enter the button states as a number: ";
         std::cin >> number;
         return 1;
     }
