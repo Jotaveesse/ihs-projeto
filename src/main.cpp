@@ -16,6 +16,8 @@
 #include <random>
 #include <algorithm>
 
+char deactiveSymbol = static_cast<char>(0xFF);
+
 std::vector<char> array1 = {
     static_cast<char>(0xC0), // 11000000
     static_cast<char>(0xD0), // 11010000
@@ -638,7 +640,6 @@ void lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *green
         }
     }
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
     {
         std::lock_guard<std::mutex> lock(deviceMutex);
         lcd->clear();
@@ -684,66 +685,75 @@ void lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *green
 
     {
         std::lock_guard<std::mutex> lock(deviceMutex);
-        lcd->setAllStates(*timer >= 0);
+        lcd->clear();
+
+        if (*timer > 0)
+        {
+            for (unsigned int i = 0; i < 16; i++)
+            {
+                lcd->sendWrite(deactiveSymbol);
+            }
+        ]
+
         lcd->update();
+        }
     }
-}
 
-int main()
-{
-    int fileDescriptor = -1;
-
-    fileDescriptor = open("/dev/mydev", O_RDWR);
-    if (fileDescriptor < 0)
+    int main()
     {
-        std::cerr << "Failed to open device: " << strerror(errno) << std::endl;
-        unsigned int number;
-        std::cin >> number;
-        return 1;
-    }
+        int fileDescriptor = -1;
 
-    Leds redLeds(fileDescriptor, WR_RED_LEDS, 18);
-    Leds greenLeds(fileDescriptor, WR_GREEN_LEDS, 8);
-    Switches switches(fileDescriptor, RD_SWITCHES, 18);
-    Buttons buttons(fileDescriptor, RD_PBUTTONS, 4);
-    SevenSegmentDisplays sevenSegment(fileDescriptor, WR_L_DISPLAY, WR_R_DISPLAY, 8);
-    LCD lcd(fileDescriptor, WR_LCD_DISPLAY);
-    lcd.init();
+        fileDescriptor = open("/dev/mydev", O_RDWR);
+        if (fileDescriptor < 0)
+        {
+            std::cerr << "Failed to open device: " << strerror(errno) << std::endl;
+            unsigned int number;
+            std::cin >> number;
+            return 1;
+        }
 
-    int timer = 240 * 1000000;
+        Leds redLeds(fileDescriptor, WR_RED_LEDS, 18);
+        Leds greenLeds(fileDescriptor, WR_GREEN_LEDS, 8);
+        Switches switches(fileDescriptor, RD_SWITCHES, 18);
+        Buttons buttons(fileDescriptor, RD_PBUTTONS, 4);
+        SevenSegmentDisplays sevenSegment(fileDescriptor, WR_L_DISPLAY, WR_R_DISPLAY, 8);
+        LCD lcd(fileDescriptor, WR_LCD_DISPLAY);
+        lcd.init();
+
+        int timer = 240 * 1000000;
 
 #pragma omp parallel sections num_threads(6) shared(timer)
-    {
-#pragma omp section
         {
-            buttons_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
-        }
 #pragma omp section
-        {
-            switches_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
-        }
+            {
+                buttons_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+            }
 #pragma omp section
-        {
-            red_leds_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
-        }
+            {
+                switches_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+            }
 #pragma omp section
-        {
-            green_leds_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
-        }
+            {
+                red_leds_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+            }
 #pragma omp section
-        {
-            seven_segment_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
-        }
+            {
+                green_leds_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+            }
 #pragma omp section
-        {
-            lcd_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+            {
+                seven_segment_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+            }
+#pragma omp section
+            {
+                lcd_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+            }
         }
-    }
 
-    if (fileDescriptor != -1)
-    {
-        close(fileDescriptor);
-    }
+        if (fileDescriptor != -1)
+        {
+            close(fileDescriptor);
+        }
 
-    return 0;
-}
+        return 0;
+    }
