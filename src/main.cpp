@@ -324,13 +324,14 @@ void green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds
             heldButton = true;
         }
 
-        for (unsigned int i = 0; i < greenLeds->getCount(); ++i)
+        for (unsigned int i = 0; i < greenLeds->getCount()-1; ++i)
         {
             greenLeds->blink(i, blinkPeriods[i]);
         }
+        greenLeds->blink(7, 500);
 
         // confirmação da escolha
-        if (heldButton && !buttons->isButtonPressed(3))
+        if (heldButton && !buttons->isButtonPressed(2))
         {
             heldButton = false;
             bool correctCombination = false;
