@@ -295,17 +295,18 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
 }
 
 std::vector<std::vector<int>> greenOrder = {
-    {18, 5, 12, 2, 15, 8, 1, 11, 17, 6, 10, 3, 16, 9, 14, 4, 13, 7},
-    {12, 5, 18, 1, 9, 14, 6, 17, 3, 15, 8, 2, 11, 4, 13, 7, 16, 10},
-    {5, 12, 18, 15, 7, 4, 11, 8, 13, 2, 16, 10, 1, 17, 3, 9, 14, 6},
-    {18, 1, 12, 5, 9, 14, 7, 13, 4, 11, 8, 16, 2, 17, 6, 10, 15, 3}};
+    {17, 4, 11, 1, 14, 7, 0, 10, 16, 5, 9, 2, 15, 8, 13, 3, 12, 6},
+    {11, 2, 17, 0, 8, 13, 5, 16, 4, 14, 7, 1, 10, 3, 12, 6, 15, 9},
+    {4, 11, 13, 14, 6, 3, 10, 7, 12, 1, 15, 9, 0, 16, 2, 8, 17, 5},
+    {17, 0, 3, 4, 8, 13, 6, 12, 11, 10, 7, 15, 1, 16, 5, 9, 14, 2}
+};
 
 unsigned int vectorToBinary(const std::vector<int>& positions) {
     unsigned int binaryNumber = 0;
 
     for (int position : positions) {
         if (position >= 1 && position <= 18) {
-            binaryNumber |= (1ULL << (position - 1)); // Set the bit at the given position
+            binaryNumber |= (1ULL << (position)); // Set the bit at the given position
         } else {
             std::cerr << "Warning: Invalid position " << position << ". Ignoring." << std::endl;
         }
