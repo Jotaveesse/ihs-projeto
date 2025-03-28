@@ -268,7 +268,7 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
                 }
                 else if (onCount > blinkCount)
                 {
-                    correctCombination = switchesStates == 0b000000111111111100;
+                    correctCombination = switchesStates == 0b000000001111111111;
                 }
                 else if (blinkCount == offCount)
                 {
@@ -331,7 +331,7 @@ unsigned int vectorToBinary(const std::vector<int> &positions)
 int getCorrectGreenCombination(std::vector<int> blinkPeriods)
 {
     std::vector<int> chosenNumbers(blinkPeriods.size(), -1);
-    std::cout << "7seg: ";
+    std::cout << "greeen leds: ";
     for (unsigned int i = 0; i < blinkPeriods.size(); ++i)
     {
         int period = (blinkPeriods[i] / 1000) - 1;
@@ -461,8 +461,8 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
 
         int dig0 = (*timer / 1000000) % 10;
         int dig1 = ((*timer / 1000000) % 60) / 10;
-        int dig2 = (*timer / 1000000) / 60;
-        int dig3 = (*timer / 1000000) / 600;
+        int dig2 = ((*timer / 1000000) / 60) % 10;
+        int dig3 = ((*timer / 1000000) / 600) % 10;
 
         sevenSegment->setDisplayFromNumber(0, dig0);
         sevenSegment->setDisplayFromNumber(1, dig1);
@@ -777,7 +777,7 @@ int main() {
             std::lock_guard<std::mutex> lock(deviceMutex);
             redLeds.setAllStates(timer <= 0);
             greenLeds.setAllStates(timer <= 0);
-            sevenSegment.setAllStates(timer >= 0);
+            sevenSegment.setAllStates(timer <= 0);
             lcd.clear();
 
             if (timer <= 0) {
