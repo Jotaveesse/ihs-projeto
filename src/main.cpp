@@ -324,7 +324,7 @@ int getCorrectGreenCombination(std::vector<int> blinkPeriods)
 
     for (unsigned int i = 0; i < blinkPeriods.size(); ++i)
     {
-        std::cout << blinkPeriods[i] << std::endl;
+        // std::cout << blinkPeriods[i] << std::endl;
     }
 
     for (unsigned int i = 0; i < blinkPeriods.size(); ++i)
@@ -339,7 +339,7 @@ int getCorrectGreenCombination(std::vector<int> blinkPeriods)
             alreadyChosen = count(chosenNumbers.begin(), chosenNumbers.end(), chosenNum) > 0;
         }
 
-        std::cout << chosenNum << std::endl;
+        // std::cout << chosenNum << std::endl;
         chosenNumbers[i] = chosenNum;
     }
 
@@ -367,7 +367,7 @@ void green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds
 
     int combination = getCorrectGreenCombination(blinkPeriods);
 
-    std::cout << combination << std::endl;
+    // std::cout << combination << std::endl;
 
     while (!deactivated && *timer > 0)
     {
@@ -627,13 +627,13 @@ void lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *green
 
     int order = dist(gen);
 
-    std::vector<int> shownCombination(8);
+    std::vector<int> shownCombination;
 
     for (unsigned int i = 0; i < 10; ++i)
     {
         if (i != (((order - 1) % 10 + 10) % 10) && i != ((order + 5) % 10))
         {
-            shownCombination[shownCombination.size()] = i;
+            shownCombination.push_back(i);
             std::cout << i << std::endl;
             std::cout << shownCombination.size() << std::endl;
         }
