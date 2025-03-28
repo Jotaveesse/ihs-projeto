@@ -17,7 +17,7 @@
 #include <algorithm>
 
 char defeatSymbol = static_cast<char>(0xFF);
-
+int buttonPressDelay = 1300;
 std::vector<char> array1 = {
     static_cast<char>(0xC0), // 11000000
     static_cast<char>(0xD0), // 11010000
@@ -184,7 +184,7 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
         id.push_back(intToHexChar(idHigher));
         id.push_back(intToHexChar(idLower));
 
-        if (buttons->isButtonPressedLong(3, 2000))
+        if (buttons->isButtonPressedLong(3, buttonPressDelay))
         {
             heldButton = true;
         }
@@ -232,7 +232,7 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
                 }
                 else
                 {
-                    correctCombination = switchesStates == 0b111000000000000111;
+                    correctCombination = switchesStates == 0b000000000000000000;
                 }
                 break;
             case 2: // Blink
@@ -252,6 +252,10 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
                 {
                     correctCombination = switchesStates == 0b000000111110000000;
                 }
+                else
+                {
+                    correctCombination = switchesStates == 0b000000000000000000;
+                }
                 break;
             case 0: // Off
                 if (blinkCount < 5)
@@ -267,6 +271,10 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
                     correctCombination = switchesStates == 0b000000111111111100;
                 }
                 else if (blinkCount == offCount)
+                {
+                    correctCombination = switchesStates == 0b100000000000000000;
+                }
+                else
                 {
                     correctCombination = switchesStates == 0b000000000000000000;
                 }
@@ -373,7 +381,7 @@ void green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds
         buttonStates = buttons->getStatesAsNumber();
         switchesStates = switches->getStatesAsNumber();
 
-        if (buttons->isButtonPressedLong(2, 2000))
+        if (buttons->isButtonPressedLong(2, buttonPressDelay))
         {
             heldButton = true;
         }
@@ -481,12 +489,12 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
         {
             buttonPressed = 3;
         }
-        if (buttons->isButtonPressedLong(0, 2000) || buttons->isButtonPressedLong(1, 2000) || buttons->isButtonPressedLong(2, 2000) || buttons->isButtonPressedLong(3, 2000))
+        if (buttons->isButtonPressedLong(0, buttonPressDelay) || buttons->isButtonPressedLong(1, buttonPressDelay) || buttons->isButtonPressedLong(2, buttonPressDelay) || buttons->isButtonPressedLong(3, buttonPressDelay))
         {
             buttonPressed = -1;
         }
 
-        if (buttonPressed != -1 && !buttons->isButtonPressed(buttonPressed) && !buttons->isButtonPressedLong(buttonPressed, 2000))
+        if (buttonPressed != -1 && !buttons->isButtonPressed(buttonPressed) && !buttons->isButtonPressedLong(buttonPressed, buttonPressDelay))
         {
             chosenButton = 4 - buttonPressed;
             buttonReleased = true;
@@ -660,7 +668,7 @@ void lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *green
         buttonStates = buttons->getStatesAsNumber();
         switchesStates = switches->getStatesAsNumber();
 
-        if (buttons->isButtonPressedLong(1, 2000))
+        if (buttons->isButtonPressedLong(1, buttonPressDelay))
         {
             heldButton = true;
         }
@@ -753,27 +761,30 @@ int main()
         }
     }
 
-    redLeds.setAllStates(timer <= 0);
-    greenLeds.setAllStates(timer <= 0);
-    sevenSegment.setAllStates(timer <= 0);
-    lcd.clear();
-
-    if (timer <= 0)
     {
-        for (unsigned int i = 0; i < 16; i++)
+        std::lock_guard<std::mutex> lock(deviceMutex);
+        redLeds.setAllStates(timer <= 0);
+        greenLeds.setAllStates(timer <= 0);
+        sevenSegment.setAllStates(timer >= 0);
+        lcd.clear();
+
+        if (timer <= 0)
         {
-            lcd.sendWrite(defeatSymbol);
+            for (unsigned int i = 0; i < 16; i++)
+            {
+                lcd.sendWrite(defeatSymbol);
+            }
         }
-    }
 
-    redLeds.update();
-    greenLeds.update();
-    sevenSegment.update();
-    lcd.update();
+        redLeds.update();
+        greenLeds.update();
+        sevenSegment.update();
+        lcd.update();
 
-    if (fileDescriptor != -1)
-    {
-        close(fileDescriptor);
+        if (fileDescriptor != -1)
+        {
+            close(fileDescriptor);
+        }
     }
 
     return 0;
