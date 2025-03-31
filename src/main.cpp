@@ -189,7 +189,7 @@ bool red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, SevenS
     }
 
     std::string id = getIdString(sevenSegment);
-    cout << "red leds: " << getCorrectCombinationNumber(ledModes, id);
+    std::cout << "red leds: " << getCorrectCombinationNumber(ledModes, id) << std::endl;
 
     while (!deactivated && *timer > 0)
     {
