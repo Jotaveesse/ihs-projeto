@@ -274,7 +274,7 @@ bool seven_segment_module(Buttons *buttons, Switches *switches, SevenSegmentDisp
 
     while (!deactivated && *timer > 0)
     {
-        sevenSegment->setDisplayFromNumber(6, stage + 1);
+        sevenSegment->setDisplayFromNumber(6, stage);
         sevenSegment->setDisplayFromNumber(7, displayedNumbers[stage]);
 
         buttonReleased = false;
