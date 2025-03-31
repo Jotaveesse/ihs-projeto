@@ -274,7 +274,7 @@ bool seven_segment_module(Buttons *buttons, Switches *switches, SevenSegmentDisp
 
     while (!deactivated && *timer > 0)
     {
-        sevenSegment->setDisplayFromNumber(6, stage);
+        sevenSegment->setDisplayFromNumber(6, stage + 1);
         sevenSegment->setDisplayFromNumber(7, displayedNumbers[stage]);
 
         buttonReleased = false;
@@ -309,7 +309,7 @@ bool seven_segment_module(Buttons *buttons, Switches *switches, SevenSegmentDisp
         if (buttonReleased)
         {
             bool correctButton = false;
-            correctButton = chosenButton == correctCombination[stage + 1];
+            correctButton = chosenButton == correctCombination[stage];
             
             if (correctButton)
             {
