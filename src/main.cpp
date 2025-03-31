@@ -88,87 +88,6 @@ void switches_module(Switches *switches, int *timer)
     }
 }
 
-unsigned int getCorrectCombinationNumber(std::vector<int> ledModes, const std::string& id) {
-    unsigned int correctCombinationNumber = 0;
-    int offCount = 0;
-    int onCount = 0;
-    int blinkCount = 0;
-
-    for (unsigned int i = 0; i < ledModes.size(); ++i)
-    {
-        int mode = ledModes[i];
-
-        switch (mode)
-        {
-        case 0: // Off
-            offCount++;
-            break;
-        case 1: // On
-            onCount++;
-            break;
-        case 2: // Blink
-            blinkCount++;
-            break;
-        }
-    }
-
-    switch (ledModes[ledModes.size() - 1]) {
-        case 1: // On
-            if (blinkCount == offCount) {
-                correctCombinationNumber = 0b000000000000000111;
-            } else if (offCount > blinkCount && std::any_of(id.begin(), id.end(), isVowel)) {
-                correctCombinationNumber = 0b000000000000001111;
-            } else if (offCount > 5) {
-                correctCombinationNumber = 0b111000000000000000;
-            } else if (onCount > 6) {
-                correctCombinationNumber = 0b000000000000111111;
-            } else {
-                correctCombinationNumber = 0b000000000000000000;
-            }
-            break;
-        case 2: // Blink
-            if (onCount > blinkCount && std::any_of(id.begin(), id.end(), isEvenDigit)) {
-                correctCombinationNumber = 0b000000000000011111;
-            } else if (onCount < 6) {
-                correctCombinationNumber = 0b111000000000000001;
-            } else if (offCount == onCount) {
-                correctCombinationNumber = 0b111110000000011111;
-            } else if (blinkCount > offCount) {
-                correctCombinationNumber = 0b000000000000011111;
-            } else {
-                correctCombinationNumber = 0b000000000000000000;
-            }
-            break;
-        case 0: // Off
-            if (blinkCount < 5) {
-                correctCombinationNumber = 0b111110000000000001;
-            } else if (blinkCount > offCount && containsLetter(id)) {
-                correctCombinationNumber = 0b111100000000000000;
-            } else if (onCount > blinkCount) {
-                correctCombinationNumber = 0b000000001111111111;
-            } else if (blinkCount == offCount) {
-                correctCombinationNumber = 0b100000000000000000;
-            } else {
-                correctCombinationNumber = 0b000000000000000000;
-            }
-            break;
-        default:
-            correctCombinationNumber = 0;
-            break;
-    }
-
-    return correctCombinationNumber;
-}
-
-std::string getIdString(SevenSegmentDisplays *sevenSegment) {
-    std::string id;
-    int idHigher = sevenSegment->getNumberFromDisplay(5);
-    int idLower = sevenSegment->getNumberFromDisplay(4);
-    id.push_back(intToHexChar(idHigher));
-    id.push_back(intToHexChar(idLower));
-    return id;
-}
-
 bool red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, SevenSegmentDisplays *sevenSegment, int *timer)
 {
     unsigned int switchesStates = 0;
@@ -189,7 +108,8 @@ bool red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, SevenS
     }
 
     std::string id = getIdString(sevenSegment);
-    std::cout << "red leds: " << getCorrectCombinationNumber(ledModes, id) << std::endl;
+
+    std::cout << "green leds: " << intToBinaryString(getCombinationRedLeds(ledModes, id)) << std::endl;
 
     while (!deactivated && *timer > 0)
     {
@@ -224,7 +144,7 @@ bool red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, SevenS
         {
             heldButton = false;
 
-            unsigned int correctCombination = getCorrectCombinationNumber(ledModes, id);
+            unsigned int correctCombination = getCombinationRedLeds(ledModes, id);
 
             if (correctCombination == switchesStates)
             {
@@ -269,7 +189,9 @@ bool green_leds_module(Buttons *buttons, Switches *switches, Leds *greenLeds, in
         blinkPeriods[i] = period * 1000;
     }
 
-    int combination = getCorrectGreenCombination(blinkPeriods);
+    int combination = getCombinationGreenLeds(blinkPeriods);
+
+    std::cout << "green leds: " << intToBinaryString(combination) << std::endl;
 
     while (!deactivated && *timer > 0)
     {
