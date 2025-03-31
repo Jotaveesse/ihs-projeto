@@ -285,11 +285,6 @@ bool red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
     return deactivated;
 }
 
-std::vector<std::vector<int>> greenOrder = {
-    {6, 4, 11, 1, 14, 7, 0, 10, 16, 5, 9, 2, 15, 8, 13, 3, 12, 17},
-    {11, 2, 17, 0, 8, 13, 5, 16, 4, 14, 7, 1, 10, 3, 12, 6, 15, 9},
-    {4, 11, 13, 14, 6, 3, 10, 7, 12, 1, 15, 9, 0, 16, 2, 8, 17, 5},
-    {17, 0, 3, 4, 8, 13, 6, 12, 11, 10, 7, 15, 1, 16, 5, 9, 14, 2}};
 
 unsigned int vectorToBinary(const std::vector<int> &positions)
 {
@@ -313,7 +308,7 @@ unsigned int vectorToBinary(const std::vector<int> &positions)
 int getCorrectGreenCombination(std::vector<int> blinkPeriods)
 {
     std::vector<int> chosenNumbers(blinkPeriods.size(), -1);
-    std::cout << "greeen leds: ";
+    std::cout << "green leds: ";
     for (int i = blinkPeriods.size() - 1; i >= 0; --i)
     {
         int period = (blinkPeriods[i] / 1000) - 1;
@@ -355,8 +350,6 @@ bool green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds
     }
 
     int combination = getCorrectGreenCombination(blinkPeriods);
-
-    // std::cout << combination << std::endl;
 
     while (!deactivated && *timer > 0)
     {
@@ -646,10 +639,8 @@ bool lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *green
         if (i != (((order - 1) % 10 + 10) % 10) && i != ((order + 5) % 10))
         {
             shownCombination.push_back(i);
-            std::cout << i;
         }
     }
-    std::cout << std::endl;
 
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::default_random_engine rng(seed);
