@@ -661,7 +661,7 @@ int main()
             }
 #pragma omp section
             {
-                bool deactivated = green_leds_module(&buttons, &switches &greenLeds, &timer);
+                bool deactivated = green_leds_module(&buttons, &switches, &greenLeds, &timer);
                 if (deactivated)
                 {
                     modulesDeactivated++;
