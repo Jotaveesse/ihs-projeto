@@ -23,7 +23,6 @@ int modulesDeactivated = 0;
 char defeatSymbol = static_cast<char>(0xFF);
 int buttonPressDelay = 1100;
 
-
 std::mutex timerMutex;
 std::mutex deviceMutex;
 
@@ -62,15 +61,7 @@ char intToHexChar(int value)
     return hexChars;
 }
 
-void setTimer(int *timer, int value)
-{
-    {
-        std::lock_guard<std::mutex> lock(timerMutex);
-        *timer = value;
-    }
-}
-
-void subtractTimer(int *timer, int value)
+void subtractTimer(int *timer, int value, std::mutex timerMutex)
 {
     {
         std::lock_guard<std::mutex> lock(timerMutex);
@@ -78,12 +69,48 @@ void subtractTimer(int *timer, int value)
     }
 }
 
-void addTimer(int *timer, int value)
+unsigned int vectorToBinary(const std::vector<int> &positions)
 {
+    unsigned int binaryNumber = 0;
+
+    for (int position : positions)
     {
-        std::lock_guard<std::mutex> lock(timerMutex);
-        *timer += value;
+        if (position >= 0 && position <= 17)
+        {
+            binaryNumber |= (1ULL << (position));
+        }
+        else
+        {
+            std::cerr << "Warning: Invalid position " << position << ". Ignoring." << std::endl;
+        }
     }
+
+    return binaryNumber;
+}
+
+int getCorrectGreenCombination(std::vector<int> blinkPeriods)
+{
+    std::vector<int> chosenNumbers(blinkPeriods.size(), -1);
+    std::cout << "green leds: ";
+    for (int i = blinkPeriods.size() - 1; i >= 0; --i)
+    {
+        int period = (blinkPeriods[i] / 1000) - 1;
+        int chosenNum = -1;
+        bool alreadyChosen = true;
+
+        for (unsigned int j = 0; alreadyChosen; ++j)
+        {
+            chosenNum = greenOrder[period][j];
+            alreadyChosen = count(chosenNumbers.begin(), chosenNumbers.end(), chosenNum) > 0;
+        }
+
+        std::cout << chosenNum << " ";
+        chosenNumbers[i] = chosenNum;
+    }
+
+    std::cout << std::endl;
+
+    return vectorToBinary(chosenNumbers);
 }
 
 void buttons_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
@@ -198,11 +225,9 @@ bool red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
                 {
                     correctCombination = switchesStates == 0b000000000000000111;
                 }
-                else if (offCount > blinkCount)
-                {
-                    correctCombination = switchesStates == 0b000000000000001111;
-                }
-                else if (offCount > 5 && std::any_of(id.begin(), id.end(), isVowel))
+                else if (offCount > blinkCount && std::any_of(id.begin(), id.end(), isVowel) {
+                             correctCombination = switchesStates == 0b000000000000001111;
+                         } else if (offCount > 5))
                 {
                     correctCombination = switchesStates == 0b111000000000000000;
                 }
@@ -218,7 +243,7 @@ bool red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
             case 2: // Blink
                 if (onCount > blinkCount && std::any_of(id.begin(), id.end(), isEvenDigit))
                 {
-                    correctCombination = switchesStates == 0b000000111110000000;
+                    correctCombination = switchesStates == 0b000000000000011111;
                 }
                 else if (onCount < 6)
                 {
@@ -230,7 +255,7 @@ bool red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
                 }
                 else if (blinkCount > offCount)
                 {
-                    correctCombination = switchesStates == 0b000000111110000000;
+                    correctCombination = switchesStates == 0b000000000000011111;
                 }
                 else
                 {
@@ -267,7 +292,7 @@ bool red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
             }
             else
             {
-                subtractTimer(timer, 15000000);
+                subtractTimer(timer, 15000000, timerMutex);
             }
         }
         {
@@ -283,51 +308,6 @@ bool red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
     }
 
     return deactivated;
-}
-
-
-unsigned int vectorToBinary(const std::vector<int> &positions)
-{
-    unsigned int binaryNumber = 0;
-
-    for (int position : positions)
-    {
-        if (position >= 0 && position <= 17)
-        {
-            binaryNumber |= (1ULL << (position)); // Set the bit at the given position
-        }
-        else
-        {
-            std::cerr << "Warning: Invalid position " << position << ". Ignoring." << std::endl;
-        }
-    }
-
-    return binaryNumber;
-}
-
-int getCorrectGreenCombination(std::vector<int> blinkPeriods)
-{
-    std::vector<int> chosenNumbers(blinkPeriods.size(), -1);
-    std::cout << "green leds: ";
-    for (int i = blinkPeriods.size() - 1; i >= 0; --i)
-    {
-        int period = (blinkPeriods[i] / 1000) - 1;
-        int chosenNum = -1;
-        bool alreadyChosen = true;
-
-        for (unsigned int j = 0; alreadyChosen; ++j)
-        {
-            chosenNum = greenOrder[period][j];
-            alreadyChosen = count(chosenNumbers.begin(), chosenNumbers.end(), chosenNum) > 0;
-        }
-
-        std::cout << chosenNum << " ";
-        chosenNumbers[i] = chosenNum;
-    }
-
-    std::cout << std::endl;
-
-    return vectorToBinary(chosenNumbers);
 }
 
 bool green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
@@ -378,7 +358,7 @@ bool green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds
             }
             else
             {
-                subtractTimer(timer, 15000000);
+                subtractTimer(timer, 15000000, timerMutex);
             }
         }
         {
@@ -405,7 +385,7 @@ void timer_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *gre
     while (modulesDeactivated < 4 && *timer > 0)
     {
         currTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-        subtractTimer(timer, (currTime - startTime));
+        subtractTimer(timer, (currTime - startTime), timerMutex);
         startTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
         int dig0 = (*timer / 1000000) % 10;
@@ -600,7 +580,7 @@ bool seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
             else
             {
                 stage = 0;
-                subtractTimer(timer, 15000000);
+                subtractTimer(timer, 15000000, timerMutex);
             }
         }
 
@@ -681,7 +661,7 @@ bool lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *green
             }
             else
             {
-                subtractTimer(timer, 15000000);
+                subtractTimer(timer, 15000000, timerMutex);
             }
         }
         {
@@ -714,7 +694,7 @@ int main()
     int initialTimerValue = 240;
 
     while (restart)
-    {   
+    {
         modulesDeactivated = 0;
 
         std::cout << "Qual o tempo inicial?" << std::endl;
