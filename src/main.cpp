@@ -88,26 +88,15 @@ void switches_module(Switches *switches, int *timer)
     }
 }
 
-bool red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, SevenSegmentDisplays *sevenSegment, int *timer)
-{
-    unsigned int switchesStates = 0;
-    unsigned int buttonStates = 0;
-
-    bool heldButton = false;
-    bool deactivated = false;
+unsigned int getCorrectCombinationNumber(std::vector<int> ledModes, const std::string& id) {
+    unsigned int correctCombinationNumber = 0;
     int offCount = 0;
     int onCount = 0;
     int blinkCount = 0;
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dist(0, 2);
-
-    std::vector<int> ledModes(redLeds->getCount());
-
-    for (unsigned int i = 0; i < redLeds->getCount(); ++i)
+    for (unsigned int i = 0; i < ledModes->getCount(); ++i)
     {
-        int mode = dist(gen);
+        int mode = ledModes[i];
 
         switch (mode)
         {
@@ -121,7 +110,73 @@ bool red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, SevenS
             blinkCount++;
             break;
         }
-        ledModes[i] = mode;
+    }
+
+    switch (ledModes[ledModes->getCount() - 1]) {
+        case 1: // On
+            if (blinkCount == offCount) {
+                correctCombinationNumber = 0b000000000000000111;
+            } else if (offCount > blinkCount && std::any_of(id.begin(), id.end(), isVowel)) {
+                correctCombinationNumber = 0b000000000000001111;
+            } else if (offCount > 5) {
+                correctCombinationNumber = 0b111000000000000000;
+            } else if (onCount > 6) {
+                correctCombinationNumber = 0b000000000000111111;
+            } else {
+                correctCombinationNumber = 0b000000000000000000;
+            }
+            break;
+        case 2: // Blink
+            if (onCount > blinkCount && std::any_of(id.begin(), id.end(), isEvenDigit)) {
+                correctCombinationNumber = 0b000000000000011111;
+            } else if (onCount < 6) {
+                correctCombinationNumber = 0b111000000000000001;
+            } else if (offCount == onCount) {
+                correctCombinationNumber = 0b111110000000011111;
+            } else if (blinkCount > offCount) {
+                correctCombinationNumber = 0b000000000000011111;
+            } else {
+                correctCombinationNumber = 0b000000000000000000;
+            }
+            break;
+        case 0: // Off
+            if (blinkCount < 5) {
+                correctCombinationNumber = 0b111110000000000001;
+            } else if (blinkCount > offCount && containsLetter(id)) {
+                correctCombinationNumber = 0b111100000000000000;
+            } else if (onCount > blinkCount) {
+                correctCombinationNumber = 0b000000001111111111;
+            } else if (blinkCount == offCount) {
+                correctCombinationNumber = 0b100000000000000000;
+            } else {
+                correctCombinationNumber = 0b000000000000000000;
+            }
+            break;
+        default:
+            correctCombinationNumber = 0;
+            break;
+    }
+
+    return correctCombinationNumber;
+}
+
+bool red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, SevenSegmentDisplays *sevenSegment, int *timer)
+{
+    unsigned int switchesStates = 0;
+    unsigned int buttonStates = 0;
+
+    bool heldButton = false;
+    bool deactivated = false;
+    
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dist(0, 2);
+
+    std::vector<int> ledModes(redLeds->getCount());
+
+    for (unsigned int i = 0; i < redLeds->getCount(); ++i)
+    {
+        ledModes[i] = dist(gen);
     }
 
     while (!deactivated && *timer > 0)
@@ -161,79 +216,10 @@ bool red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, SevenS
         if (heldButton && !buttons->isButtonPressed(3))
         {
             heldButton = false;
-            bool correctCombination = false;
 
-            switch (ledModes[redLeds->getCount() - 1])
-            {
-            case 1: // On
-                if (blinkCount == offCount)
-                {
-                    correctCombination = switchesStates == 0b000000000000000111;
-                }
-                else if (offCount > blinkCount && std::any_of(id.begin(), id.end(), isVowel))
-                {
-                    correctCombination = switchesStates == 0b000000000000001111;
-                }
-                else if (offCount > 5)
-                {
-                    correctCombination = switchesStates == 0b111000000000000000;
-                }
-                else if (onCount > 6)
-                {
-                    correctCombination = switchesStates == 0b000000000000111111;
-                }
-                else
-                {
-                    correctCombination = switchesStates == 0b000000000000000000;
-                }
-                break;
-            case 2: // Blink
-                if (onCount > blinkCount && std::any_of(id.begin(), id.end(), isEvenDigit))
-                {
-                    correctCombination = switchesStates == 0b000000000000011111;
-                }
-                else if (onCount < 6)
-                {
-                    correctCombination = switchesStates == 0b111000000000000001;
-                }
-                else if (offCount == onCount)
-                {
-                    correctCombination = switchesStates == 0b111110000000011111;
-                }
-                else if (blinkCount > offCount)
-                {
-                    correctCombination = switchesStates == 0b000000000000011111;
-                }
-                else
-                {
-                    correctCombination = switchesStates == 0b000000000000000000;
-                }
-                break;
-            case 0: // Off
-                if (blinkCount < 5)
-                {
-                    correctCombination = switchesStates == 0b111110000000000001;
-                }
-                else if (blinkCount > offCount && containsLetter(id))
-                {
-                    correctCombination = switchesStates == 0b111100000000000000;
-                }
-                else if (onCount > blinkCount)
-                {
-                    correctCombination = switchesStates == 0b000000001111111111;
-                }
-                else if (blinkCount == offCount)
-                {
-                    correctCombination = switchesStates == 0b100000000000000000;
-                }
-                else
-                {
-                    correctCombination = switchesStates == 0b000000000000000000;
-                }
-                break;
-            }
+            unsigned int correctCombination = getCorrectCombinationNumber(ledModes, id);
 
-            if (correctCombination)
+            if (correctCombination == switchesStates)
             {
                 deactivated = true;
             }
