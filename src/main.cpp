@@ -160,6 +160,15 @@ unsigned int getCorrectCombinationNumber(std::vector<int> ledModes, const std::s
     return correctCombinationNumber;
 }
 
+std::string getIdString(SevenSegmentDisplays *sevenSegment) {
+    std::string id;
+    int idHigher = sevenSegment->getNumberFromDisplay(5);
+    int idLower = sevenSegment->getNumberFromDisplay(4);
+    id.push_back(intToHexChar(idHigher));
+    id.push_back(intToHexChar(idLower));
+    return id;
+}
+
 bool red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, SevenSegmentDisplays *sevenSegment, int *timer)
 {
     unsigned int switchesStates = 0;
@@ -179,17 +188,15 @@ bool red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, SevenS
         ledModes[i] = dist(gen);
     }
 
+    std::string id = getIdString(sevenSegment);
+    cout << "red leds: " << getCorrectCombinationNumber(ledModes, id);
+
     while (!deactivated && *timer > 0)
     {
         buttonStates = buttons->getStatesAsNumber();
         switchesStates = switches->getStatesAsNumber();
 
-        int idHigher = sevenSegment->getNumberFromDisplay(5);
-        int idLower = sevenSegment->getNumberFromDisplay(4);
-
-        std::string id;
-        id.push_back(intToHexChar(idHigher));
-        id.push_back(intToHexChar(idLower));
+        id = getIdString(sevenSegment);
 
         if (buttons->isButtonPressedLong(3, buttonPressDelay))
         {
