@@ -110,7 +110,7 @@ void buttons_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *g
 {
     unsigned int buttonStates = 0;
 
-    while (*timer > 0)
+    while (modulesDeactivated < 4 && *timer > 0)
     {
         buttonStates = buttons->getStatesAsNumber();
 
@@ -125,7 +125,7 @@ void switches_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
 {
     unsigned int buttonStates = 0;
 
-    while (*timer > 0)
+    while (modulesDeactivated < 4 && *timer > 0)
     {
         buttonStates = buttons->getStatesAsNumber();
 
@@ -136,7 +136,7 @@ void switches_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
     }
 }
 
-void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
+bool red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
 {
     unsigned int switchesStates = 0;
     unsigned int buttonStates = 0;
@@ -301,6 +301,8 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
         redLeds->setAllStates(*timer <= 0);
         redLeds->update();
     }
+
+    return deactivated;
 }
 
 std::vector<std::vector<int>> greenOrder = {
@@ -353,7 +355,7 @@ int getCorrectGreenCombination(std::vector<int> blinkPeriods)
     return vectorToBinary(chosenNumbers);
 }
 
-void green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
+bool green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
 {
     unsigned int buttonStates = 0;
     unsigned int switchesStates = 0;
@@ -417,6 +419,8 @@ void green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds
         greenLeds->setAllStates(*timer <= 0);
         greenLeds->update();
     }
+
+    return deactivated;
 }
 
 void timer_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
@@ -425,7 +429,7 @@ void timer_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *gre
     unsigned int startTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     unsigned int currTime = startTime;
 
-    while (*timer > 0)
+    while (modulesDeactivated < 4 && *timer > 0)
     {
         currTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
         subtractTimer(timer, (currTime - startTime));
@@ -470,7 +474,7 @@ void id_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenL
     sevenSegment->setDisplayFromNumber(4, num1);
 }
 
-void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
+bool seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
 {
     unsigned int switchesStates = 0;
     unsigned int buttonStates = 0;
@@ -642,13 +646,15 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
     }
     {
         std::lock_guard<std::mutex> lock(deviceMutex);
-        sevenSegment->setDisplayFromNumber(6, *timer <= 0);
-        sevenSegment->setDisplayFromNumber(7, *timer <= 0);
+        sevenSegment->setAllDisplay(6, *timer <= 0);
+        sevenSegment->setAllDisplay(7, *timer <= 0);
         sevenSegment->update();
     }
+
+    return deactivated;
 }
 
-void lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
+bool lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
 {
     unsigned int buttonStates = 0;
     unsigned int switchesStates = 0;
@@ -735,19 +741,23 @@ void lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *green
 
         lcd->update();
     }
+
+    return deactivated;
 }
+
+int modulesDeactivated = 0;
 
 int main()
 {
     bool restart = true;
-    int initialTimerValue = 240; // Default timer value
+    int initialTimerValue = 240;
 
-    std::cout << "Enter the timer value in seconds: ";
+    std::cout << "Qual o tempo inicial?";
     std::cin >> initialTimerValue;
 
     if (std::cin.fail())
     {
-        std::cerr << "Invalid input. Using default timer: 240 seconds." << std::endl;
+        std::cerr << "Valor inválido. Iniciando com 240 segundos" << std::endl;
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         initialTimerValue = 240;
@@ -788,19 +798,35 @@ int main()
             }
 #pragma omp section
             {
-                red_leds_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+                bool deactivated = red_leds_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+                if (deactivated)
+                {
+                    modulesDeactivated++;
+                }
             }
 #pragma omp section
             {
-                green_leds_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+                bool deactivated = green_leds_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+                if (deactivated)
+                {
+                    modulesDeactivated++;
+                }
             }
 #pragma omp section
             {
-                seven_segment_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+                bool deactivated = seven_segment_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+                if (deactivated)
+                {
+                    modulesDeactivated++;
+                }
             }
 #pragma omp section
             {
-                lcd_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+                bool deactivated = lcd_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+                if (deactivated)
+                {
+                    modulesDeactivated++;
+                }
             }
 #pragma omp section
             {
@@ -816,7 +842,10 @@ int main()
             std::lock_guard<std::mutex> lock(deviceMutex);
             redLeds.setAllStates(timer <= 0);
             greenLeds.setAllStates(timer <= 0);
-            sevenSegment.setAllStates(timer <= 0);
+            sevenSegment.setAllDisplay(4,timer <= 0);
+            sevenSegment.setAllDisplay(5,timer <= 0);
+            sevenSegment.setAllDisplay(6,timer <= 0);
+            sevenSegment.setAllDisplay(7,timer <= 0);
             lcd.clear();
 
             if (timer <= 0)
@@ -838,11 +867,11 @@ int main()
             }
         }
 
-        std::cout << "Do you want to restart? (y/n): ";
+        std::cout << "Deseja recomeçar? (s/n): ";
         char choice;
         std::cin >> choice;
 
-        if (choice != 'y' && choice != 'Y')
+        if (choice != 's' && choice != 'S')
         {
             restart = false;
         }

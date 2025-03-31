@@ -105,6 +105,16 @@ unsigned int SevenSegmentDisplays::getNumberFromDisplay(unsigned int displayInde
     return 0; // Retorna 0 como um indicador de erro se o padrão não for encontrado
 }
 
+void SevenSegmentDisplays::setAllDisplay(unsigned int displayIndex, bool val)
+{
+    unsigned int indexOffset = displayIndex * 8;
+
+    for (unsigned int i = 0; i < 7; ++i)
+    {
+        states[indexOffset + i] = val;
+    }
+}
+
 void SevenSegmentDisplays::setDisplayFromNumber(unsigned int displayIndex, unsigned int number)
 {
     number = number % 16;

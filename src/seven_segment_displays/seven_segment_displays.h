@@ -18,6 +18,8 @@ public:
 
     unsigned int getNumberFromDisplay(unsigned int displayIndex);
 
+    void setAllDisplay(unsigned int displayIndex, bool val);
+
     void setDisplayFromNumber(unsigned int displayIndex, unsigned int number);
 
     void setAllDisplaysFromNumber(unsigned int number);
