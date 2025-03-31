@@ -653,7 +653,7 @@ int main()
             }
 #pragma omp section
             {
-                bool deactivated = red_leds_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+                bool deactivated = red_leds_module(&buttons, &switches, &redLeds, &sevenSegment, &timer);
                 if (deactivated)
                 {
                     modulesDeactivated++;
@@ -661,7 +661,7 @@ int main()
             }
 #pragma omp section
             {
-                bool deactivated = green_leds_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+                bool deactivated = green_leds_module(&buttons, &switches &greenLeds, &timer);
                 if (deactivated)
                 {
                     modulesDeactivated++;
@@ -669,7 +669,7 @@ int main()
             }
 #pragma omp section
             {
-                bool deactivated = seven_segment_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+                bool deactivated = seven_segment_module(&buttons, &switches, &sevenSegment, &timer);
                 if (deactivated)
                 {
                     modulesDeactivated++;
@@ -677,7 +677,7 @@ int main()
             }
 #pragma omp section
             {
-                bool deactivated = lcd_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+                bool deactivated = lcd_module(&buttons, &switches, &lcd, &timer);
                 if (deactivated)
                 {
                     modulesDeactivated++;
