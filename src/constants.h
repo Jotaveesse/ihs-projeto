@@ -3,6 +3,8 @@
 
 #include <array>
 
+const char defeatSymbol = static_cast<char>(0xFF);
+
 constexpr std::array<char, 10> japaneseSymbols = {
     static_cast<char>(0xC0),
     static_cast<char>(0xD0),
