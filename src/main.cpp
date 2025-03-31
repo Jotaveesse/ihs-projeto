@@ -94,7 +94,7 @@ unsigned int getCorrectCombinationNumber(std::vector<int> ledModes, const std::s
     int onCount = 0;
     int blinkCount = 0;
 
-    for (unsigned int i = 0; i < ledModes->getCount(); ++i)
+    for (unsigned int i = 0; i < ledModes.size(); ++i)
     {
         int mode = ledModes[i];
 
@@ -112,7 +112,7 @@ unsigned int getCorrectCombinationNumber(std::vector<int> ledModes, const std::s
         }
     }
 
-    switch (ledModes[ledModes->getCount() - 1]) {
+    switch (ledModes[ledModes.size() - 1]) {
         case 1: // On
             if (blinkCount == offCount) {
                 correctCombinationNumber = 0b000000000000000111;
