@@ -240,7 +240,7 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
                 {
                     correctCombination = switchesStates == 0b000000111110000000;
                 }
-                else if (onCount < 7)
+                else if (onCount < 6)
                 {
                     correctCombination = switchesStates == 0b111000000000000001;
                 }
@@ -304,7 +304,7 @@ void red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
 }
 
 std::vector<std::vector<int>> greenOrder = {
-    {17, 4, 11, 1, 14, 7, 0, 10, 16, 5, 9, 2, 15, 8, 13, 3, 12, 6},
+    {6, 4, 11, 1, 14, 7, 0, 10, 16, 5, 9, 2, 15, 8, 13, 3, 12, 17},
     {11, 2, 17, 0, 8, 13, 5, 16, 4, 14, 7, 1, 10, 3, 12, 6, 15, 9},
     {4, 11, 13, 14, 6, 3, 10, 7, 12, 1, 15, 9, 0, 16, 2, 8, 17, 5},
     {17, 0, 3, 4, 8, 13, 6, 12, 11, 10, 7, 15, 1, 16, 5, 9, 14, 2}};
