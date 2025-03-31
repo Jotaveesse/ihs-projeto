@@ -61,7 +61,7 @@ char intToHexChar(int value)
     return hexChars;
 }
 
-void subtractTimer(int *timer, int value, std::mutex timerMutex)
+void subtractTimer(int *timer, int value, std::mutex& timerMutex)
 {
     {
         std::lock_guard<std::mutex> lock(timerMutex);
@@ -225,9 +225,11 @@ bool red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
                 {
                     correctCombination = switchesStates == 0b000000000000000111;
                 }
-                else if (offCount > blinkCount && std::any_of(id.begin(), id.end(), isVowel) {
-                             correctCombination = switchesStates == 0b000000000000001111;
-                         } else if (offCount > 5))
+                else if (offCount > blinkCount && std::any_of(id.begin(), id.end(), isVowel))
+                {
+                    correctCombination = switchesStates == 0b000000000000001111;
+                }
+                else if (offCount > 5)
                 {
                     correctCombination = switchesStates == 0b111000000000000000;
                 }
