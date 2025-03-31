@@ -16,6 +16,8 @@
 #include <random>
 #include <algorithm>
 
+int modulesDeactivated = 0;
+
 char defeatSymbol = static_cast<char>(0xFF);
 int buttonPressDelay = 1300;
 std::vector<char> array1 = {
@@ -745,8 +747,6 @@ bool lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *green
     return deactivated;
 }
 
-int modulesDeactivated = 0;
-
 int main()
 {
     bool restart = true;
@@ -770,7 +770,7 @@ int main()
         fileDescriptor = open("/dev/mydev", O_RDWR);
         if (fileDescriptor < 0)
         {
-            std::cerr << "Failed to open device: " << strerror(errno) << std::endl;
+            std::cerr << "Falha ao abrir dispositivo: " << strerror(errno) << std::endl;
             unsigned int number;
             std::cin >> number;
             return 1;
@@ -784,7 +784,7 @@ int main()
         LCD lcd(fileDescriptor, WR_LCD_DISPLAY);
         lcd.init();
 
-        int timer = initialTimerValue * 1000000; // Timer in microseconds
+        int timer = initialTimerValue * 1000000;
 
 #pragma omp parallel sections num_threads(8) shared(timer)
         {
