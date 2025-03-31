@@ -649,7 +649,7 @@ int main()
             }
 #pragma omp section
             {
-                switches_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+                switches_module(&switches, &timer);
             }
 #pragma omp section
             {
