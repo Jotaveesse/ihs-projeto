@@ -1,8 +1,10 @@
-#include "leds/leds.h"
-#include "switches/switches.h"
-#include "buttons/buttons.h"
-#include "seven_segment_displays/seven_segment_displays.h"
-#include "lcd/lcd.h"
+#include "peripherals/buttons/buttons.h"
+#include "peripherals/switches/switches.h"
+#include "peripherals/leds/leds.h"
+#include "peripherals/seven_segment_displays/seven_segment_displays.h"
+#include "peripherals/lcd/lcd.h"
+#include "constants.h"
+
 #include <iostream>
 #include <unistd.h>
 #include <fcntl.h>
@@ -19,32 +21,8 @@
 int modulesDeactivated = 0;
 
 char defeatSymbol = static_cast<char>(0xFF);
-int buttonPressDelay = 1300;
-std::vector<char> japaneseSymbols = {
-    static_cast<char>(0xC0), // 11000000
-    static_cast<char>(0xD0), // 11010000
-    static_cast<char>(0xAE), // 10101110
-    static_cast<char>(0xD3), // 11010011
-    static_cast<char>(0xB7), // 10110111
-    static_cast<char>(0xFC), // 11111100
-    static_cast<char>(0xC2), // 11000010
-    static_cast<char>(0xD6), // 11010110
-    static_cast<char>(0xD1), // 11010001
-    static_cast<char>(0xD5)  // 11010101
-};
+int buttonPressDelay = 1100;
 
-std::vector<char> latinSymbols = {
-    static_cast<char>(0x80), // 10000000
-    static_cast<char>(0x81), // 10000001
-    static_cast<char>(0x82), // 10000010
-    static_cast<char>(0xC6), // 11000110
-    static_cast<char>(0x46), // 01000110
-    static_cast<char>(0xAF), // 10101111
-    static_cast<char>(0xF8), // 11111000
-    static_cast<char>(0xFE), // 11111110
-    static_cast<char>(0xA4), // 10100100
-    static_cast<char>(0x56)  // 01010110
-};
 
 std::mutex timerMutex;
 std::mutex deviceMutex;
@@ -248,7 +226,7 @@ bool red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
                 }
                 else if (offCount == onCount)
                 {
-                    correctCombination = switchesStates == 0b111110000000000111;
+                    correctCombination = switchesStates == 0b111110000000011111;
                 }
                 else if (blinkCount > offCount)
                 {
@@ -745,7 +723,9 @@ int main()
     int initialTimerValue = 240;
 
     while (restart)
-    {
+    {   
+        modulesDeactivated = 0;
+
         std::cout << "Qual o tempo inicial?" << std::endl;
         std::cin >> initialTimerValue;
 
