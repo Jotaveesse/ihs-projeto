@@ -8,6 +8,8 @@
 #include <iostream> // For std::cerr
 #include <mutex>
 #include <cstdint> // For uint64_t
+#include <bitset>
+#include <limits>
 #include "peripherals/seven_segment_displays/seven_segment_displays.h"
 
 
