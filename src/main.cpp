@@ -448,10 +448,10 @@ void timer_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *gre
     }
     {
         std::lock_guard<std::mutex> lock(deviceMutex);
-        sevenSegment->setState(0, *timer <= 0);
-        sevenSegment->setState(1, *timer <= 0);
-        sevenSegment->setState(2, *timer <= 0);
-        sevenSegment->setState(3, *timer <= 0);
+        sevenSegment->setDisplayFromNumber(0, *timer <= 0);
+        sevenSegment->setDisplayFromNumber(1, *timer <= 0);
+        sevenSegment->setDisplayFromNumber(2, *timer <= 0);
+        sevenSegment->setDisplayFromNumber(3, *timer <= 0);
         sevenSegment->update();
     }
 }
@@ -642,8 +642,8 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
     }
     {
         std::lock_guard<std::mutex> lock(deviceMutex);
-        sevenSegment->setState(6, *timer <= 0);
-        sevenSegment->setState(7, *timer <= 0);
+        sevenSegment->setDisplayFromNumber(6, *timer <= 0);
+        sevenSegment->setDisplayFromNumber(7, *timer <= 0);
         sevenSegment->update();
     }
 }
