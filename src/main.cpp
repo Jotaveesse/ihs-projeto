@@ -336,7 +336,7 @@ int getCorrectGreenCombination(std::vector<int> blinkPeriods)
 {
     std::vector<int> chosenNumbers(blinkPeriods.size(), -1);
     std::cout << "greeen leds: ";
-    for (unsigned int i = 0; i < blinkPeriods.size(); ++i)
+    for (int i = blinkPeriods.size() - 1; i >= 0; --i)
     {
         int period = (blinkPeriods[i] / 1000) - 1;
         int chosenNum = -1;
@@ -746,7 +746,7 @@ int main()
 
     while (restart)
     {
-        std::cout << "Qual o tempo inicial?";
+        std::cout << "Qual o tempo inicial?" << std::endl;
         std::cin >> initialTimerValue;
 
         if (std::cin.fail())
