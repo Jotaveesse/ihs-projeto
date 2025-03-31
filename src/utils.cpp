@@ -47,7 +47,7 @@ unsigned int vectorToBinary(const std::vector<int>& positions) {
 }
 
 std::string intToBinaryString(int number) {
-    std::bitset<std::numeric_limits<int>::digits> binary(number);
+    std::bitset<18> binary(number);
     return binary.to_string();
 }
 
