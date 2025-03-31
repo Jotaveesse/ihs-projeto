@@ -21,6 +21,8 @@ void subtractTimer(int* timer, int value, std::mutex& timerMutex);
 unsigned int vectorToBinary(const std::vector<int>& positions);
 int getCombinationGreenLeds(std::vector<int> blinkPeriods);
 int getCombinationRedLeds(std::vector<int> ledModes, const std::string& id);
+std::array<int, 4> getCorrectCombinationMemory(const std::vector<int>& displayedNumbers);
+
 std::string getIdString(SevenSegmentDisplays *sevenSegment);
 std::string intToBinaryString(int number);
 

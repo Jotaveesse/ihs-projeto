@@ -95,7 +95,7 @@ bool red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, SevenS
 
     bool heldButton = false;
     bool deactivated = false;
-    
+
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dist(0, 2);
@@ -109,7 +109,7 @@ bool red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, SevenS
 
     std::string id = getIdString(sevenSegment);
 
-    std::cout << "green leds: " << intToBinaryString(getCombinationRedLeds(ledModes, id)) << std::endl;
+    std::cout << "red leds: " << intToBinaryString(getCombinationRedLeds(ledModes, id)) << std::endl;
 
     while (!deactivated && *timer > 0)
     {
@@ -258,6 +258,15 @@ bool seven_segment_module(Buttons *buttons, Switches *switches, SevenSegmentDisp
         int num = dist(gen);
         displayedNumbers[i] = num;
     }
+
+    std::array<int, 4> correct = getCorrectCombinationMemory(displayedNumbers);
+
+    std::cout << "memory:";
+    for (int i = 0; i < correct.size(); i++)
+    {
+        std::cout << " " << correct[i];
+    }
+    std::cout << std::endl;
 
     bool buttonReleased = false;
     int buttonPressed = -1;

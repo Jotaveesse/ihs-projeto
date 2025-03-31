@@ -62,7 +62,6 @@ std::string getIdString(SevenSegmentDisplays *sevenSegment) {
 
 int getCombinationGreenLeds(std::vector<int> blinkPeriods) {
     std::vector<int> chosenNumbers(blinkPeriods.size(), -1);
-    std::cout << "green leds: ";
     for (int i = blinkPeriods.size() - 1; i >= 0; --i) {
         int period = (blinkPeriods[i] / 1000) - 1;
         int chosenNum = -1;
@@ -71,10 +70,8 @@ int getCombinationGreenLeds(std::vector<int> blinkPeriods) {
             chosenNum = greenOrder[period][j];
             alreadyChosen = count(chosenNumbers.begin(), chosenNumbers.end(), chosenNum) > 0;
         }
-        std::cout << chosenNum << " ";
         chosenNumbers[i] = chosenNum;
     }
-    std::cout << std::endl;
     return vectorToBinary(chosenNumbers);
 }
 
@@ -148,4 +145,93 @@ int getCombinationRedLeds(std::vector<int> ledModes, const std::string& id) {
     }
 
     return correctCombinationNumber;
+}
+
+std::array<int, 4> getCorrectCombinationMemory(const std::vector<int>& displayedNumbers) {
+    std::array<int, 4> correctButtons; // Array to store correct buttons
+    std::vector<int> pressedPositions(4, 0); // Vector to store pressed positions
+
+    for (int stage = 0; stage < 4; ++stage) {
+        switch (stage + 1) {
+            case 1:
+                switch (displayedNumbers[stage]) {
+                    case 1:
+                    case 2:
+                        correctButtons[stage] = 2;
+                        pressedPositions[stage] = 2;
+                        break;
+                    case 3:
+                        correctButtons[stage] = 1;
+                        pressedPositions[stage] = 1;
+                        break;
+                    case 4:
+                        correctButtons[stage] = 4;
+                        pressedPositions[stage] = 4;
+                        break;
+                }
+                break;
+            case 2:
+                switch (displayedNumbers[stage]) {
+                    case 1:
+                        correctButtons[stage] = displayedNumbers[0];
+                        pressedPositions[stage] = displayedNumbers[0];
+                        break;
+                    case 2:
+                        correctButtons[stage] = pressedPositions[0];
+                        pressedPositions[stage] = pressedPositions[0];
+                        break;
+                    case 3:
+                        correctButtons[stage] = 1;
+                        pressedPositions[stage] = 1;
+                        break;
+                    case 4:
+                        correctButtons[stage] = pressedPositions[0];
+                        pressedPositions[stage] = pressedPositions[0];
+                        break;
+                }
+                break;
+            case 3:
+                switch (displayedNumbers[stage]) {
+                    case 1:
+                        correctButtons[stage] = pressedPositions[1];
+                        pressedPositions[stage] = pressedPositions[1];
+                        break;
+                    case 2:
+                        correctButtons[stage] = pressedPositions[0];
+                        pressedPositions[stage] = pressedPositions[0];
+                        break;
+                    case 3:
+                        correctButtons[stage] = 3;
+                        pressedPositions[stage] = 3;
+                        break;
+                    case 4:
+                        correctButtons[stage] = displayedNumbers[1];
+                        pressedPositions[stage] = displayedNumbers[1];
+                        break;
+                }
+                break;
+            case 4:
+                switch (displayedNumbers[stage]) {
+                    case 1:
+                        correctButtons[stage] = pressedPositions[1];
+                        pressedPositions[stage] = pressedPositions[1];
+                        break;
+                    case 2:
+                        correctButtons[stage] = pressedPositions[0];
+                        pressedPositions[stage] = pressedPositions[0];
+                        break;
+                    case 3:
+                        correctButtons[stage] = pressedPositions[1];
+                        pressedPositions[stage] = pressedPositions[1];
+                        break;
+                    case 4:
+                        correctButtons[stage] = pressedPositions[2];
+                        pressedPositions[stage] = pressedPositions[2];
+                        break;
+                }
+                break;
+        }
+    }
+
+    return correctButtons;
 }
