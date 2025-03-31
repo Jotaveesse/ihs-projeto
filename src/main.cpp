@@ -419,41 +419,13 @@ void green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds
     }
 }
 
-void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
+void timer_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
 {
-    unsigned int switchesStates = 0;
-    unsigned int buttonStates = 0;
-
-    bool deactivated = false;
-
     int initialTimer = *timer;
     unsigned int startTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     unsigned int currTime = startTime;
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dist(1, 4);
-
-    std::uniform_int_distribution<> idDist(0, 15);
-    int num1 = idDist(gen);
-    int num2 = idDist(gen);
-    sevenSegment->setDisplayFromNumber(5, num2);
-    sevenSegment->setDisplayFromNumber(4, num1);
-
-    int stage = 0;
-    std::vector<int> displayedNumbers(4);
-    std::vector<int> pressedPositions(4);
-
-    for (unsigned int i = 0; i < 4; ++i)
-    {
-        int num = dist(gen);
-        displayedNumbers[i] = num;
-    }
-
-    bool buttonReleased = false;
-    int buttonPressed = -1;
-    int chosenButton = -1;
-    while (!deactivated && *timer > 0)
+    while (*timer > 0)
     {
         currTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
         subtractTimer(timer, (currTime - startTime));
@@ -469,6 +441,62 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
         sevenSegment->setDisplayFromNumber(2, dig2);
         sevenSegment->setDisplayFromNumber(3, dig3);
 
+        {
+            std::lock_guard<std::mutex> lock(deviceMutex);
+            sevenSegment->update();
+        }
+    }
+    {
+        std::lock_guard<std::mutex> lock(deviceMutex);
+        sevenSegment->setState(0, *timer <= 0);
+        sevenSegment->setState(1, *timer <= 0);
+        sevenSegment->setState(2, *timer <= 0);
+        sevenSegment->setState(3, *timer <= 0);
+        sevenSegment->update();
+    }
+}
+
+void id_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    std::uniform_int_distribution<> idDist(0, 15);
+
+    int num1 = idDist(gen);
+    int num2 = idDist(gen);
+
+    sevenSegment->setDisplayFromNumber(5, num2);
+    sevenSegment->setDisplayFromNumber(4, num1);
+}
+
+void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
+{
+    unsigned int switchesStates = 0;
+    unsigned int buttonStates = 0;
+
+    bool deactivated = false;
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dist(1, 4);
+
+    int stage = 0;
+    std::vector<int> displayedNumbers(4);
+    std::vector<int> pressedPositions(4);
+
+    for (unsigned int i = 0; i < 4; ++i)
+    {
+        int num = dist(gen);
+        displayedNumbers[i] = num;
+    }
+
+    bool buttonReleased = false;
+    int buttonPressed = -1;
+    int chosenButton = -1;
+
+    while (!deactivated && *timer > 0)
+    {
         sevenSegment->setDisplayFromNumber(6, stage + 1);
         sevenSegment->setDisplayFromNumber(7, displayedNumbers[stage]);
 
@@ -592,8 +620,6 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
                 break;
             }
 
-            std::cerr << correctButton << std::endl;
-
             if (correctButton)
             {
                 stage += 1;
@@ -616,7 +642,8 @@ void seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
     }
     {
         std::lock_guard<std::mutex> lock(deviceMutex);
-        sevenSegment->setAllStates(*timer <= 0);
+        sevenSegment->setState(6, *timer <= 0);
+        sevenSegment->setState(7, *timer <= 0);
         sevenSegment->update();
     }
 }
@@ -710,25 +737,29 @@ void lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *green
     }
 }
 
-int main() {
+int main()
+{
     bool restart = true;
     int initialTimerValue = 240; // Default timer value
 
     std::cout << "Enter the timer value in seconds: ";
     std::cin >> initialTimerValue;
 
-    if (std::cin.fail()) {
+    if (std::cin.fail())
+    {
         std::cerr << "Invalid input. Using default timer: 240 seconds." << std::endl;
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         initialTimerValue = 240;
     }
 
-    while (restart) {
+    while (restart)
+    {
         int fileDescriptor = -1;
 
         fileDescriptor = open("/dev/mydev", O_RDWR);
-        if (fileDescriptor < 0) {
+        if (fileDescriptor < 0)
+        {
             std::cerr << "Failed to open device: " << strerror(errno) << std::endl;
             unsigned int number;
             std::cin >> number;
@@ -745,7 +776,7 @@ int main() {
 
         int timer = initialTimerValue * 1000000; // Timer in microseconds
 
-#pragma omp parallel sections num_threads(6) shared(timer)
+#pragma omp parallel sections num_threads(8) shared(timer)
         {
 #pragma omp section
             {
@@ -771,6 +802,14 @@ int main() {
             {
                 lcd_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
             }
+#pragma omp section
+            {
+                id_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+            }
+#pragma omp section
+            {
+                timer_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+            }
         }
 
         {
@@ -780,8 +819,10 @@ int main() {
             sevenSegment.setAllStates(timer <= 0);
             lcd.clear();
 
-            if (timer <= 0) {
-                for (unsigned int i = 0; i < 16; i++) {
+            if (timer <= 0)
+            {
+                for (unsigned int i = 0; i < 16; i++)
+                {
                     lcd.sendWrite(defeatSymbol);
                 }
             }
@@ -791,7 +832,8 @@ int main() {
             sevenSegment.update();
             lcd.update();
 
-            if (fileDescriptor != -1) {
+            if (fileDescriptor != -1)
+            {
                 close(fileDescriptor);
             }
         }
@@ -800,7 +842,8 @@ int main() {
         char choice;
         std::cin >> choice;
 
-        if (choice != 'y' && choice != 'Y') {
+        if (choice != 'y' && choice != 'Y')
+        {
             restart = false;
         }
     }
