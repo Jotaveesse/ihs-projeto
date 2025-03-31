@@ -859,6 +859,15 @@ int main()
             }
         }
 
+        if (timer <= 0)
+        {
+            std::cout << "Perdestes, a bomba explodiu :<" << std::endl;
+        }
+        else
+        {
+            std::cout << "Ganhastes, você salvou a todos!!!" << std::endl;
+        }
+
         std::cout << "Deseja recomeçar? (s/n): ";
         char choice;
         std::cin >> choice;
