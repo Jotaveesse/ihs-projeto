@@ -20,7 +20,7 @@ int modulesDeactivated = 0;
 
 char defeatSymbol = static_cast<char>(0xFF);
 int buttonPressDelay = 1300;
-std::vector<char> array1 = {
+std::vector<char> japaneseSymbols = {
     static_cast<char>(0xC0), // 11000000
     static_cast<char>(0xD0), // 11010000
     static_cast<char>(0xAE), // 10101110
@@ -33,7 +33,7 @@ std::vector<char> array1 = {
     static_cast<char>(0xD5)  // 11010101
 };
 
-std::vector<char> array2 = {
+std::vector<char> latinSymbols = {
     static_cast<char>(0x80), // 10000000
     static_cast<char>(0x81), // 10000001
     static_cast<char>(0x82), // 10000010
@@ -452,14 +452,6 @@ void timer_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *gre
             sevenSegment->update();
         }
     }
-    {
-        std::lock_guard<std::mutex> lock(deviceMutex);
-        sevenSegment->setDisplayFromNumber(0, *timer <= 0);
-        sevenSegment->setDisplayFromNumber(1, *timer <= 0);
-        sevenSegment->setDisplayFromNumber(2, *timer <= 0);
-        sevenSegment->setDisplayFromNumber(3, *timer <= 0);
-        sevenSegment->update();
-    }
 }
 
 void id_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
@@ -691,7 +683,7 @@ bool lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *green
         lcd->clear();
         for (unsigned int i = 0; i < 8; i++)
         {
-            lcd->sendWrite(array1[shownCombination[i]]);
+            lcd->sendWrite(japaneseSymbols[shownCombination[i]]);
             lcd->sendWrite(" ");
         }
 
@@ -752,19 +744,19 @@ int main()
     bool restart = true;
     int initialTimerValue = 240;
 
-    std::cout << "Qual o tempo inicial?";
-    std::cin >> initialTimerValue;
-
-    if (std::cin.fail())
-    {
-        std::cerr << "Valor inválido. Iniciando com 240 segundos" << std::endl;
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        initialTimerValue = 240;
-    }
-
     while (restart)
     {
+        std::cout << "Qual o tempo inicial?";
+        std::cin >> initialTimerValue;
+
+        if (std::cin.fail())
+        {
+            std::cerr << "Valor inválido. Iniciando com 240 segundos" << std::endl;
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            initialTimerValue = 240;
+        }
+
         int fileDescriptor = -1;
 
         fileDescriptor = open("/dev/mydev", O_RDWR);
@@ -842,10 +834,10 @@ int main()
             std::lock_guard<std::mutex> lock(deviceMutex);
             redLeds.setAllStates(timer <= 0);
             greenLeds.setAllStates(timer <= 0);
-            sevenSegment.setAllDisplay(4,timer <= 0);
-            sevenSegment.setAllDisplay(5,timer <= 0);
-            sevenSegment.setAllDisplay(6,timer <= 0);
-            sevenSegment.setAllDisplay(7,timer <= 0);
+            sevenSegment.setAllDisplay(4, timer <= 0);
+            sevenSegment.setAllDisplay(5, timer <= 0);
+            sevenSegment.setAllDisplay(6, timer <= 0);
+            sevenSegment.setAllDisplay(7, timer <= 0);
             lcd.clear();
 
             if (timer <= 0)
