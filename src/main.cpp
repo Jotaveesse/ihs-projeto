@@ -259,12 +259,12 @@ bool seven_segment_module(Buttons *buttons, Switches *switches, SevenSegmentDisp
         displayedNumbers[i] = num;
     }
 
-    std::array<int, 4> correct = getCorrectCombinationMemory(displayedNumbers);
+    std::array<int, 4> correctCombination = getCorrectCombinationMemory(displayedNumbers);
 
     std::cout << "memory:";
-    for (int i = 0; i < correct.size(); i++)
+    for (int i = 0; i < correctCombination.size(); i++)
     {
-        std::cout << " " << correct[i];
+        std::cout << " " << correctCombination[i];
     }
     std::cout << std::endl;
 
@@ -309,94 +309,8 @@ bool seven_segment_module(Buttons *buttons, Switches *switches, SevenSegmentDisp
         if (buttonReleased)
         {
             bool correctButton = false;
-            switch (stage + 1)
-            {
-            case 1:
-                switch (displayedNumbers[stage])
-                {
-                case 1:
-                    correctButton = chosenButton == 2;
-                    pressedPositions[stage] = 2;
-                    break;
-                case 2:
-                    correctButton = chosenButton == 2;
-                    pressedPositions[stage] = 2;
-                    break;
-                case 3:
-                    correctButton = chosenButton == 1;
-                    pressedPositions[stage] = 1;
-                    break;
-                case 4:
-                    correctButton = chosenButton == 4;
-                    pressedPositions[stage] = 4;
-                    break;
-                }
-                break;
-            case 2:
-                switch (displayedNumbers[stage])
-                {
-                case 1:
-                    correctButton = chosenButton == displayedNumbers[1 - 1];
-                    pressedPositions[stage] = displayedNumbers[1 - 1];
-                    break;
-                case 2:
-                    correctButton = chosenButton == pressedPositions[1 - 1];
-                    pressedPositions[stage] = pressedPositions[1 - 1];
-                    break;
-                case 3:
-                    correctButton = chosenButton == 1;
-                    pressedPositions[stage] = 1;
-                    break;
-                case 4:
-                    correctButton = chosenButton == pressedPositions[1 - 1];
-                    pressedPositions[stage] = pressedPositions[1 - 1];
-                    break;
-                }
-                break;
-            case 3:
-                switch (displayedNumbers[stage])
-                {
-                case 1:
-                    correctButton = chosenButton == pressedPositions[2 - 1];
-                    pressedPositions[stage] = pressedPositions[2 - 1];
-                    break;
-                case 2:
-                    correctButton = chosenButton == pressedPositions[1 - 1];
-                    pressedPositions[stage] = pressedPositions[1 - 1];
-                    break;
-                case 3:
-                    correctButton = chosenButton == 3;
-                    pressedPositions[stage] = 3;
-                    break;
-                case 4:
-                    correctButton = chosenButton == displayedNumbers[2 - 1];
-                    pressedPositions[stage] = displayedNumbers[2 - 1];
-                    break;
-                }
-                break;
-            case 4:
-                switch (displayedNumbers[stage])
-                {
-                case 1:
-                    correctButton = chosenButton == pressedPositions[2 - 1];
-                    pressedPositions[stage] = pressedPositions[2 - 1];
-                    break;
-                case 2:
-                    correctButton = chosenButton == pressedPositions[1 - 1];
-                    pressedPositions[stage] = pressedPositions[1 - 1];
-                    break;
-                case 3:
-                    correctButton = chosenButton == pressedPositions[2 - 1];
-                    pressedPositions[stage] = pressedPositions[2 - 1];
-                    break;
-                case 4:
-                    correctButton = chosenButton == pressedPositions[3 - 1];
-                    pressedPositions[stage] = pressedPositions[3 - 1];
-                    break;
-                }
-                break;
-            }
-
+            correctButton = chosenButton == correctCombination[stage + 1];
+            
             if (correctButton)
             {
                 stage += 1;
