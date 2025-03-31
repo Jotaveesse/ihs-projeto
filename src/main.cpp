@@ -27,37 +27,68 @@ const int buttonPressDelay = 1100;
 std::mutex timerMutex;
 std::mutex deviceMutex;
 
-void buttons_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
+void id_module(SevenSegmentDisplays *sevenSegment)
 {
-    unsigned int buttonStates = 0;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    std::uniform_int_distribution<> idDist(0, 15);
+
+    int num1 = idDist(gen);
+    int num2 = idDist(gen);
+
+    sevenSegment->setDisplayFromNumber(5, num2);
+    sevenSegment->setDisplayFromNumber(4, num1);
+}
+
+void timer_module(SevenSegmentDisplays *sevenSegment, int *timer)
+{
+    int initialTimer = *timer;
+    unsigned int startTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    unsigned int currTime = startTime;
 
     while (modulesDeactivated < 4 && *timer > 0)
     {
-        buttonStates = buttons->getStatesAsNumber();
+        currTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+        subtractTimer(timer, (currTime - startTime), timerMutex);
+        startTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+
+        int dig0 = (*timer / 1000000) % 10;
+        int dig1 = ((*timer / 1000000) % 60) / 10;
+        int dig2 = ((*timer / 1000000) / 60) % 10;
+        int dig3 = ((*timer / 1000000) / 600) % 10;
+
+        sevenSegment->setDisplayFromNumber(0, dig0);
+        sevenSegment->setDisplayFromNumber(1, dig1);
+        sevenSegment->setDisplayFromNumber(2, dig2);
+        sevenSegment->setDisplayFromNumber(3, dig3);
 
         {
             std::lock_guard<std::mutex> lock(deviceMutex);
-            buttons->update();
+            sevenSegment->update();
         }
     }
 }
 
-void switches_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
+void buttons_module(Buttons *buttons, int *timer)
 {
-    unsigned int buttonStates = 0;
-
     while (modulesDeactivated < 4 && *timer > 0)
     {
-        buttonStates = buttons->getStatesAsNumber();
-
-        {
-            std::lock_guard<std::mutex> lock(deviceMutex);
-            switches->update();
-        }
+        std::lock_guard<std::mutex> lock(deviceMutex);
+        buttons->update();
     }
 }
 
-bool red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
+void switches_module(Switches *switches, int *timer)
+{
+    while (modulesDeactivated < 4 && *timer > 0)
+    {
+        std::lock_guard<std::mutex> lock(deviceMutex);
+        switches->update();
+    }
+}
+
+bool red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, SevenSegmentDisplays *sevenSegment, int *timer)
 {
     unsigned int switchesStates = 0;
     unsigned int buttonStates = 0;
@@ -226,7 +257,7 @@ bool red_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *
     return deactivated;
 }
 
-bool green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
+bool green_leds_module(Buttons *buttons, Switches *switches, Leds *greenLeds, int *timer)
 {
     unsigned int buttonStates = 0;
     unsigned int switchesStates = 0;
@@ -292,50 +323,7 @@ bool green_leds_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds
     return deactivated;
 }
 
-void timer_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
-{
-    int initialTimer = *timer;
-    unsigned int startTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    unsigned int currTime = startTime;
-
-    while (modulesDeactivated < 4 && *timer > 0)
-    {
-        currTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-        subtractTimer(timer, (currTime - startTime), timerMutex);
-        startTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-
-        int dig0 = (*timer / 1000000) % 10;
-        int dig1 = ((*timer / 1000000) % 60) / 10;
-        int dig2 = ((*timer / 1000000) / 60) % 10;
-        int dig3 = ((*timer / 1000000) / 600) % 10;
-
-        sevenSegment->setDisplayFromNumber(0, dig0);
-        sevenSegment->setDisplayFromNumber(1, dig1);
-        sevenSegment->setDisplayFromNumber(2, dig2);
-        sevenSegment->setDisplayFromNumber(3, dig3);
-
-        {
-            std::lock_guard<std::mutex> lock(deviceMutex);
-            sevenSegment->update();
-        }
-    }
-}
-
-void id_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
-{
-    std::random_device rd;
-    std::mt19937 gen(rd());
-
-    std::uniform_int_distribution<> idDist(0, 15);
-
-    int num1 = idDist(gen);
-    int num2 = idDist(gen);
-
-    sevenSegment->setDisplayFromNumber(5, num2);
-    sevenSegment->setDisplayFromNumber(4, num1);
-}
-
-bool seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
+bool seven_segment_module(Buttons *buttons, Switches *switches, SevenSegmentDisplays *sevenSegment, int *timer)
 {
     unsigned int switchesStates = 0;
     unsigned int buttonStates = 0;
@@ -515,7 +503,7 @@ bool seven_segment_module(Buttons *buttons, Switches *switches, Leds *redLeds, L
     return deactivated;
 }
 
-bool lcd_module(Buttons *buttons, Switches *switches, Leds *redLeds, Leds *greenLeds, SevenSegmentDisplays *sevenSegment, LCD *lcd, int *timer)
+bool lcd_module(Buttons *buttons, Switches *switches, LCD *lcd, int *timer)
 {
     unsigned int buttonStates = 0;
     unsigned int switchesStates = 0;
@@ -649,7 +637,15 @@ int main()
         {
 #pragma omp section
             {
-                buttons_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
+                id_module(&sevenSegment);
+            }
+#pragma omp section
+            {
+                timer_module(&sevenSegment, &timer);
+            }
+#pragma omp section
+            {
+                buttons_module(&buttons, &timer);
             }
 #pragma omp section
             {
@@ -686,14 +682,6 @@ int main()
                 {
                     modulesDeactivated++;
                 }
-            }
-#pragma omp section
-            {
-                id_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
-            }
-#pragma omp section
-            {
-                timer_module(&buttons, &switches, &redLeds, &greenLeds, &sevenSegment, &lcd, &timer);
             }
         }
 
