@@ -25,7 +25,7 @@ public:
             std::cout << states[i] << " ";
         }
         std::cout << std::endl;
-    }
+    } 
 
     unsigned int getCount() const { return count; }
 
